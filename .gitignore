@@ -1,3 +1,5 @@
 CMakeLists.txt
-/build
-/.vscode
+build/
+.vscode/
+myIncludes/
+src/
