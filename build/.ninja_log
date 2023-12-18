@@ -1,13 +1,13 @@
 # ninja log v5
-1	1340	1702936902677921050	CMakeFiles/Sia_Library.dir/src/main.cpp.o	16867aa5a63c8714
+2	1505	1702938458027610529	CMakeFiles/Sia_Library.dir/src/main.cpp.o	16867aa5a63c8714
 1	15	1702929722019349340	CMakeFiles/Sia.dir/Sia/Sia_main.cpp.o	a320e1ee6ec714d2
-1340	1501	1702936902837921002	Sia_Library	da1cafca7eccaf85
+1505	1670	1702938458197610496	Sia_Library	da1cafca7eccaf85
 1	16	1702929722019349340	CMakeFiles/Sia.dir/Sia/Sia_common.cpp.o	35f596f1797901ce
 2	16	1702929722019349340	CMakeFiles/Sia.dir/Sia/Sia_train.cpp.o	8f1d09b93f33edae
 2	16	1702929722019349340	CMakeFiles/Sia.dir/Sia/Sia_run.cpp.o	41b108ccf4ac434c
 2	16	1702929722019349340	CMakeFiles/Sia.dir/Sia/Sia_node.cpp.o	e6efaec87cb16bb2
-1	1342	1702936565167987262	CMakeFiles/Sia.dir/Sia/Sia_network.cpp.o	43d77887335d947d
+1	1347	1702938457877610559	CMakeFiles/Sia.dir/Sia/Sia_network.cpp.o	43d77887335d947d
 1	16	1702929722019349340	CMakeFiles/Sia.dir/Sia/Sia_functions.cpp.o	8796efe20f5a6a95
-1167	1201	1702936859277930280	libSia.a	bf665bf47858791d
-1	1167	1702936859237930291	CMakeFiles/Sia.dir/Sia/Sia_input_layer.cpp.o	9fbc457ba62b4762
+1357	1394	1702938457917610551	libSia.a	bf665bf47858791d
+1	1357	1702938457887610557	CMakeFiles/Sia.dir/Sia/Sia_input_layer.cpp.o	9fbc457ba62b4762
 0	6	0	clean	a31eedcededa8236
