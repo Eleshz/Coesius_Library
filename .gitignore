@@ -1,5 +1,5 @@
 CMakeLists.txt
-build/
-.vscode/
-myIncludes/
-src/
+**/build/
+**/.vscode/
+**/myIncludes/
+**/src/
