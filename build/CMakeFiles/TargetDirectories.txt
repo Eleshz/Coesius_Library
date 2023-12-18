@@ -1,4 +1,0 @@
-/home/edgar/C++_projects/Sia_Library/build/CMakeFiles/Sia.dir
-/home/edgar/C++_projects/Sia_Library/build/CMakeFiles/Sia_Library.dir
-/home/edgar/C++_projects/Sia_Library/build/CMakeFiles/edit_cache.dir
-/home/edgar/C++_projects/Sia_Library/build/CMakeFiles/rebuild_cache.dir
