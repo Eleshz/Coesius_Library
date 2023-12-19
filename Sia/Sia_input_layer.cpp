@@ -4,37 +4,30 @@
 #include <iostream>
 #include <Eigen/Dense>
 
-Base_layer::Base_layer() {
-
-};
-Base_layer::~Base_layer() {
-
-};
-
 Sia_input_matrix::Sia_input_matrix(const Eigen::VectorXf& matrix){
 //Saves a reference to the matrix
     OneD_input_matrix = &matrix;
 //Sets the type of input to single dimension
-    type = ONE_D;
+    matrix_type = ONE_D;
 };
 Sia_input_matrix::Sia_input_matrix(const Eigen::MatrixXf& matrix){
 //Saves a reference to the matrix
     TwoD_input_matrix = &matrix;
 //Sets the type of input to two dimensional
-    type = TWO_D;
+    matrix_type = TWO_D;
 };
 Sia_input_matrix::Sia_input_matrix(const std::vector<Eigen::MatrixXf*> &matrix){
 //Saves a reference to the matrix
     ThreeD_input_matrix = &matrix;
 //Sets the type of input to three dimensional
-    type = THREE_D;
+    matrix_type = THREE_D;
 };
 Sia_input_matrix::~Sia_input_matrix(){
-    
+
 };
 void Sia_input_matrix::print_values(){
 //What type am I printing??
-    switch(type){
+    switch(matrix_type){
         case(ONE_D): {
 //Prints one dimensional matrix
         const int size = OneD_input_matrix->size();
