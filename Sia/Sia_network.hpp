@@ -32,7 +32,6 @@ public:
     Sia_input_matrix(const Eigen::VectorXf& matrix);
     Sia_input_matrix(const Eigen::MatrixXf& matrix);
     Sia_input_matrix(const std::vector<Eigen::MatrixXf*>& matrix);
-    Sia_input_matrix();
 
 //Auto destructor (for now I guess)
     ~Sia_input_matrix();
@@ -43,11 +42,22 @@ public:
 
 class Sia_output_matrix : public Base_layer {
 protected:
+enum type_matrix {
+        ONE_D,
+        TWO_D,
+        THREE_D,
+    };
+//Knows what type the input is, 1/2/3 dimensional matrices
+    type_matrix matrix_type;
+
     const Eigen::VectorXf* OneD_output_matrix;
     const Eigen::MatrixXf* TwoD_output_matrix;
     const std::vector<Eigen::MatrixXf*>* ThreeD_output_matrix;
 public:
-    Sia_output_matrix();
+    Sia_output_matrix(const Eigen::VectorXf& matrix);
+    Sia_output_matrix(const Eigen::MatrixXf& matrix);
+    Sia_output_matrix(const std::vector<Eigen::MatrixXf*>& matrix);
+
     ~Sia_output_matrix();
 
 };
