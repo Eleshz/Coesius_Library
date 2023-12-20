@@ -102,7 +102,6 @@ public:
 };
 class Sia_layered_network
 {
-
 private:
     std::vector<std::unique_ptr<Base_layer>> layers;
 public:
