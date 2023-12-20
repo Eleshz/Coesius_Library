@@ -4,21 +4,15 @@
 #include <iostream>
 #include <Eigen/Dense>
 
-Sia_input_matrix::Sia_input_matrix(const Eigen::VectorXf& matrix){
-//Saves a reference to the matrix
-    OneD_input_matrix = &matrix;
+Sia_input_matrix::Sia_input_matrix(const Eigen::VectorXf& matrix) : OneD_input_matrix(&matrix) {
 //Sets the type of input to single dimension
     matrix_type = ONE_D;
 };
-Sia_input_matrix::Sia_input_matrix(const Eigen::MatrixXf& matrix){
-//Saves a reference to the matrix
-    TwoD_input_matrix = &matrix;
+Sia_input_matrix::Sia_input_matrix(const Eigen::MatrixXf& matrix) : TwoD_input_matrix(&matrix){
 //Sets the type of input to two dimensional
     matrix_type = TWO_D;
 };
-Sia_input_matrix::Sia_input_matrix(const std::vector<Eigen::MatrixXf*> &matrix){
-//Saves a reference to the matrix
-    ThreeD_input_matrix = &matrix;
+Sia_input_matrix::Sia_input_matrix(const std::vector<Eigen::MatrixXf*> &matrix) : ThreeD_input_matrix(&matrix){
 //Sets the type of input to three dimensional
     matrix_type = THREE_D;
 };

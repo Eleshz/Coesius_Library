@@ -41,6 +41,10 @@ public:
 };
 
 class Sia_output_matrix : public Base_layer {
+private:
+    Eigen::VectorXf dummyOneD;
+    Eigen::MatrixXf dummyTwoD;
+    std::vector<Eigen::MatrixXf*> dummyThreeD;
 protected:
 enum type_matrix {
         ONE_D,
@@ -50,13 +54,13 @@ enum type_matrix {
 //Knows what type the input is, 1/2/3 dimensional matrices
     type_matrix matrix_type;
 
-    const Eigen::VectorXf* OneD_output_matrix;
-    const Eigen::MatrixXf* TwoD_output_matrix;
-    const std::vector<Eigen::MatrixXf*>* ThreeD_output_matrix;
+    Eigen::VectorXf& OneD_output_matrix;
+    Eigen::MatrixXf& TwoD_output_matrix;
+    std::vector<Eigen::MatrixXf*>& ThreeD_output_matrix;
 public:
-    Sia_output_matrix(const Eigen::VectorXf& matrix);
-    Sia_output_matrix(const Eigen::MatrixXf& matrix);
-    Sia_output_matrix(const std::vector<Eigen::MatrixXf*>& matrix);
+    Sia_output_matrix(Eigen::VectorXf& matrix);
+    Sia_output_matrix(Eigen::MatrixXf& matrix);
+    Sia_output_matrix(std::vector<Eigen::MatrixXf*>& matrix);
 
     ~Sia_output_matrix();
 
