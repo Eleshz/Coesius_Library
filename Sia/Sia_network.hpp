@@ -2,9 +2,12 @@
 
 #include <vector>
 
+#include "Sia_compile_random.hpp"
+
 #pragma once
 
 enum layer_types {
+    INPUT,
     DENSE,
     LINEAR,
     CONVOLUTION,
@@ -19,6 +22,10 @@ namespace Sia {
 
 class Dense_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::INPUT;
+
 public:
     Dense_layer() {};
     ~Dense_layer() {};
@@ -26,6 +33,10 @@ public:
 
 class Linear_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::LINEAR;
+
 public:
     Linear_layer() {};
     ~Linear_layer() {};
@@ -33,6 +44,10 @@ public:
 
 class Convolution_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::CONVOLUTION;
+
 public:
     Convolution_layer() {};
     ~Convolution_layer() {};
@@ -40,6 +55,10 @@ public:
 
 class Activation_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::ACTIVATION;
+
 public:
     Activation_layer() {};
     ~Activation_layer() {};
@@ -47,6 +66,10 @@ public:
 
 class Pooling_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::POOLING;
+
 public:
     Pooling_layer() {};
     ~Pooling_layer() {};
@@ -54,6 +77,10 @@ public:
 
 class Normalization_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::NORMALIZATION;
+
 public:
     Normalization_layer() {};
     ~Normalization_layer() {};
@@ -61,6 +88,10 @@ public:
 
 class Dropout_layer {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::DROPOUT;
+
 public:
     Dropout_layer() {};
     ~Dropout_layer() {};
@@ -68,17 +99,23 @@ public:
 
 class Output_matrix {
 protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::OUTPUT;
+
 public:
     Output_matrix() {};
     ~Output_matrix() {};
 
 };
 
+template<typename T>
+concept input_output_restrict = std::is_same_v<T, int> || std::is_same_v<T, double>;
+
 class Layered_network
 {
 private:
 
-    std::vector<layer_types> _Layer_types;
 
 public:
     Layered_network() {};
@@ -87,5 +124,5 @@ public:
     
 };
 
-} // Namespace
+} // Namespace end scope
 
