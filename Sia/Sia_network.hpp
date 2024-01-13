@@ -6,16 +6,12 @@
 
 #pragma once
 
+class Layered_network;
+
 enum layer_types {
-    INPUT,
-    DENSE,
-    LINEAR,
-    CONVOLUTION,
-    ACTIVATION,
-    POOLING,
-    NORMALIZATION,
-    DROPOUT,
-    OUTPUT
+    INPUT = 0,
+    OUTPUT,
+    DENSE
 };
 
 namespace Sia {
@@ -23,6 +19,7 @@ namespace Sia {
 class Dense_layer {
 protected:
 
+    const Layered_network& network;
     long unsigned int _ID = DYC_RAND_NEXT;
     int _layer_type = layer_types::INPUT;
 
@@ -31,77 +28,12 @@ public:
     ~Dense_layer() {};
 };
 
-class Linear_layer {
-protected:
-
-    long unsigned int _ID = DYC_RAND_NEXT;
-    int _layer_type = layer_types::LINEAR;
-
-public:
-    Linear_layer() {};
-    ~Linear_layer() {};
-};
-
-class Convolution_layer {
-protected:
-
-    long unsigned int _ID = DYC_RAND_NEXT;
-    int _layer_type = layer_types::CONVOLUTION;
-
-public:
-    Convolution_layer() {};
-    ~Convolution_layer() {};
-};
-
-class Activation_layer {
-protected:
-
-    long unsigned int _ID = DYC_RAND_NEXT;
-    int _layer_type = layer_types::ACTIVATION;
-
-public:
-    Activation_layer() {};
-    ~Activation_layer() {};
-};
-
-class Pooling_layer {
-protected:
-
-    long unsigned int _ID = DYC_RAND_NEXT;
-    int _layer_type = layer_types::POOLING;
-
-public:
-    Pooling_layer() {};
-    ~Pooling_layer() {};
-};
-
-class Normalization_layer {
-protected:
-
-    long unsigned int _ID = DYC_RAND_NEXT;
-    int _layer_type = layer_types::NORMALIZATION;
-
-public:
-    Normalization_layer() {};
-    ~Normalization_layer() {};
-};
-
-class Dropout_layer {
-protected:
-
-    long unsigned int _ID = DYC_RAND_NEXT;
-    int _layer_type = layer_types::DROPOUT;
-
-public:
-    Dropout_layer() {};
-    ~Dropout_layer() {};
-};
-
 class Output_matrix {
 protected:
 
     long unsigned int _ID = DYC_RAND_NEXT;
     int _layer_type = layer_types::OUTPUT;
+
 
 public:
     Output_matrix() {};
@@ -109,13 +41,24 @@ public:
 
 };
 
-template<typename T>
-concept input_output_restrict = std::is_same_v<T, int> || std::is_same_v<T, double>;
+class Input_matrix {
+protected:
+
+    long unsigned int _ID = DYC_RAND_NEXT;
+    int _layer_type = layer_types::INPUT;
+
+
+public:
+    Input_matrix() {};
+    ~Input_matrix() {};
+
+};
 
 class Layered_network
 {
 private:
 
+    Eigen::VectorXf _output; 
 
 public:
     Layered_network() {};
