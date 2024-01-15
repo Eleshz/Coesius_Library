@@ -6,7 +6,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Sia_compile_random.hpp"
+#include "Sia_common.hpp"
 
 #pragma once
 
@@ -31,7 +31,7 @@ class Dense_layer {
 protected:
 
     const Layered_network& _network;
-    uint64_t _ID = DYC_RAND_NEXT;
+    uint64_t _ID = RANDOM_UINT64T();
     uint16_t _layer_type = layer_types::INPUT;
 
     Eigen::ArrayXf* _output;
@@ -48,7 +48,7 @@ class Output_matrix {
 protected:
 
     const Layered_network& _network;
-    uint64_t _ID = DYC_RAND_NEXT;
+    uint64_t _ID = RANDOM_UINT64T();
     uint16_t _layer_type = layer_types::OUTPUT;
 
 
@@ -80,7 +80,7 @@ class Input_matrix {
 protected:
 
     const Layered_network& _network;
-    uint64_t _ID = DYC_RAND_NEXT;
+    uint64_t _ID = RANDOM_UINT64T();
     uint16_t _layer_type = layer_types::INPUT;
 
     const T& _input;
@@ -100,18 +100,21 @@ private:
     std::vector<std::pair<uint64_t, uint64_t>> _links; // (Two unique IDs that represent a link, first is head, second is tail)
     std::vector<Eigen::MatrixXf> _matricies; // Stores whatever matricies the network needs, layers-anything
     std::vector<Eigen::ArrayXf> _arrays;  // Stores whatever arrays the network needs, layers-anything
+
+    std::vector<Eigen::MatrixXf> _map_matricies; // Matricies for the final map of the network
+    std::vector<Eigen::ArrayXf> _map_arrays; // Array for the final map of the network
+    std::vector<void (*)(const Eigen::ArrayXf&)> _map_functions; // Array functions for the final map of the network
 // Input stuff ----------------------------------------------------------------------------------------------------------------------------
     matrix_types _input_settings; // Just saves whether it's a 1/2/3 dimensional input
 // Dense stuff ----------------------------------------------------------------------------------------------------------------------------
-    std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), uint64_t>> _dense_settings; // (Layer width, activation function, unique ID)
-    std::vector<Eigen::MatrixXf> _dense_weights; // Saves the weights in relation to the layer above them, as you should lol
-    std::vector<void (*)(const Eigen::ArrayXf&)> _activation_derivatives; // Self explanitory...
+    // (Layer width, activation function, activation function derivative, weights in relation to the layer above them, unique ID)
+    std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), Eigen::MatrixXf, bool, bool, uint64_t>> _dense_settings; // 
 
     /* Cleans up all removed layers and settings, used
     before many other operations to make sure a clean
     slate and no weirdness, right now it just removes
     'empty' layers */
-    void formatLayers();
+    void deleteLayers();
 
 
 public:
@@ -123,7 +126,7 @@ public:
 
     template <is_valid T>
     void addLayer(const Input_matrix<T>& layer) {
-        formatLayers();
+        deleteLayers();
         for (auto layer_i : _layers){
             if(std::get<0>(layer_i) == INPUT) {
                 std::cerr << "Only one input layer permitted... this has done nothing!\n";

@@ -1,6 +1,6 @@
 #include "Sia_network.hpp"
 
-void Sia::Layered_network::formatLayers() {
+void Sia::Layered_network::deleteLayers() {
     if (_layers.empty()) // Just skip if there's nothing there
         return;
     size_t index = 0;
