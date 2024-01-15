@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdint>
 #include <span>
+#include <iostream>
+#include <algorithm>
 
 #include "Sia_compile_random.hpp"
 
@@ -34,7 +36,8 @@ protected:
 
     Eigen::ArrayXf* _output;
     bool use_bias = true;
-    void (*)() _activation;
+    bool use_weights = true;
+    void (*_activation)(const Eigen::ArrayXf&);
 
 public:
     Dense_layer(Layered_network& network) : _network(network) {};
@@ -91,7 +94,7 @@ public:
 class Layered_network {
 private:
 // Output
-    Eigen::VectorXf _output;
+    Eigen::ArrayXf _output;
 // General network stuff ------------------------------------------------------------------------------------------------------------------
     std::vector<std::tuple<layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
     std::vector<std::pair<uint64_t, uint64_t>> _links; // (Two unique IDs that represent a link, first is head, second is tail)
@@ -100,15 +103,35 @@ private:
 // Input stuff ----------------------------------------------------------------------------------------------------------------------------
     matrix_types _input_settings; // Just saves whether it's a 1/2/3 dimensional input
 // Dense stuff ----------------------------------------------------------------------------------------------------------------------------
-    std::vector<std::tuple<size_t, void (*)(), uint64_t>> _dense_settings; // (Layer width, activation function, unique ID)
+    std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), uint64_t>> _dense_settings; // (Layer width, activation function, unique ID)
     std::vector<Eigen::MatrixXf> _dense_weights; // Saves the weights in relation to the layer above them, as you should lol
-    std::vector<void (*)()> _activation_derivatives; // Self explanitory...
+    std::vector<void (*)(const Eigen::ArrayXf&)> _activation_derivatives; // Self explanitory...
+
+    /* Cleans up all removed layers and settings, used
+    before many other operations to make sure a clean
+    slate and no weirdness, right now it just removes
+    'empty' layers */
+    void formatLayers();
 
 
 public:
-    Layered_network() {};
+    Layered_network() {
+        _layers.reserve(10);
+        _dense_settings.reserve(10);
+    };
     ~Layered_network() {};
 
+    template <is_valid T>
+    void addLayer(const Input_matrix<T>& layer) {
+        formatLayers();
+        for (auto layer_i : _layers){
+            if(std::get<0>(layer_i) == INPUT) {
+                std::cerr << "Only one input layer permitted... this has done nothing!\n";
+                return;
+            }
+        }
+        _layers.emplace_back(INPUT, (layer._ID), _layers.size());
+    }
     
 };
 
