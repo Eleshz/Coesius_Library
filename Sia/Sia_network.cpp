@@ -14,7 +14,7 @@ void Sia::Layered_network::formatLayers() {
             std::rotate(_layers.begin()+index, _layers.begin()+(1+index), _layers.end()); // Move all the layers to the left, pushing the "empty" layer to the back
             _layers.pop_back(); // Delete it
             if (layer_type!=0){
-                switch(layer_type){
+                switch(layer_type){ // Do the same for the settings of the layer
                     case(1): {
                         std::rotate(_dense_settings.begin()+setting_index, _dense_settings.begin()+(1+setting_index), _dense_settings.end());
                     }
