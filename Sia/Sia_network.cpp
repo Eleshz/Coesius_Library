@@ -5,7 +5,6 @@ void Sia::Layered_network::deleteLayers() {
         return;
     size_t index = 0;
     for (auto &layer : _layers){
-        if (index >= _layers.size() - 1) break; // prevent overflow
         int layer_type;
         int setting_index;
         if (std::get<1>(layer)==0){ // Did they delete a layer?

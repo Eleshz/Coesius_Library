@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Dense>
 
 #include <vector>
@@ -7,8 +9,6 @@
 #include <algorithm>
 
 #include "Sia_common.hpp"
-
-#pragma once
 
 enum layer_types {
     INPUT = 0,
@@ -112,8 +112,8 @@ private:
 // General network stuff ------------------------------------------------------------------------------------------------------------------
     std::vector<std::tuple<layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
     std::vector<std::pair<uint64_t, uint64_t>> _links; // (Two unique IDs that represent a link, first is head, second is tail)
-    std::vector<Eigen::MatrixXf&> _matricies; // Stores whatever matricies the network needs, layers-anything
-    std::vector<Eigen::ArrayXf&> _arrays;  // Stores whatever arrays the network needs, layers-anything
+    std::vector<Eigen::MatrixXf> _matricies; // Stores whatever matricies the network needs, layers-anything
+    std::vector<Eigen::ArrayXf> _arrays;  // Stores whatever arrays the network needs, layers-anything
 
     std::vector<Eigen::MatrixXf> _map_matricies; // Matricies for the final map of the network
     std::vector<Eigen::ArrayXf> _map_arrays; // Array for the final map of the network

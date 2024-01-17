@@ -1,3 +1,5 @@
+#pragma once
+
 #include <random>
 
 static struct RandomUInt64T {
