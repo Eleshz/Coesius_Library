@@ -54,7 +54,9 @@ protected:
     const T& _input;
 
 public:
-    Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network) {};
+    Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network) {
+        
+    };
     ~Input_matrix() {};
 
     uint64_t getID() {return _ID; };
@@ -71,6 +73,7 @@ class Dense_layer {
     friend Layered_network;
 protected:
 
+// Settings
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
     const uint16_t _layer_type = layer_types::INPUT;
