@@ -10,7 +10,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Sia_common.hpp"
+#include "Sia_general.ipp"
 
 enum layer_types {
     INPUT = 0,
@@ -28,23 +28,26 @@ namespace Sia { // Start namespace scope
 
 class Layered_network;
 
+namespace INTERNAL{
+
 template <typename T>
-concept is_fixed_size_eigen_matrix_or_vector = requires(T a) {
-    { a.rows() } -> std::same_as<std::ptrdiff_t>;
-    { a.cols() } -> std::same_as<std::ptrdiff_t>;
-    { a(0, 0) } -> std::same_as<float&>;
+concept is_fixed_size_eigen_matrix_or_vector = requires(T t) {
+    { t.rows() } -> std::same_as<std::ptrdiff_t>;
+    { t.cols() } -> std::same_as<std::ptrdiff_t>;
+    { t(0, 0) } -> std::same_as<float&>;
     requires T::RowsAtCompileTime != Eigen::Dynamic;
     requires T::ColsAtCompileTime != Eigen::Dynamic;
 };
 
 template <typename T>
-concept is_valid = requires(T a) {
-    { a.size() } -> std::same_as<std::size_t>;
-    { a[0] } -> std::same_as<float&>;
+concept is_valid = requires(T t) {
+    { t.size() } -> std::same_as<std::size_t>;
+    { t[0] } -> std::same_as<float&>;
 } || is_fixed_size_eigen_matrix_or_vector<T>;
 
+}
 
-template <is_valid T>
+template <Sia::INTERNAL::is_valid T>
 class Input_matrix {
 
     template<typename>
@@ -54,14 +57,7 @@ class Input_matrix {
     struct is_std_array<std::array<U, N>> : std::true_type {};
 
     template <typename U>
-    constexpr uint16_t deduce_input_type() {
-        if constexpr (std::is_base_of<Eigen::DenseBase<std::decay_t<U>>, std::decay_t<U>>::value) {
-            return 0;
-        } else if constexpr (is_std_array<std::decay_t<U>>::value) {
-            return 1;
-        }
-        return 2; 
-    }
+    constexpr uint16_t deduce_input_type();
 
     friend Layered_network;
 protected:
@@ -71,7 +67,7 @@ protected:
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
     const uint16_t _layer_type = layer_types::INPUT;
-    const uint16_t _input_type; //Please don't change, will fix soon
+    const uint16_t _input_type;
 
 
 public:
@@ -99,7 +95,10 @@ public:
         }
         std::ios::sync_with_stdio(was_synced);
     }
+    
 };
+
+#include "Sia_input.ipp"
 
 class Dense_layer {
     friend Layered_network;
@@ -172,7 +171,7 @@ public:
     };
     ~Layered_network() {};
 
-    template <is_valid T>
+    template <Sia::INTERNAL::is_valid T>
     void addLayer(const Input_matrix<T>& layer) {
         deleteLayers();
         for (auto layer_i : _layers){
