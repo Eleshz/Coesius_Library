@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdint>
 #include <span>
+#include <array>
+#include <type_traits>
 #include <iostream>
 #include <algorithm>
 
@@ -44,27 +46,57 @@ concept is_valid = requires(T a) {
 
 template <is_valid T>
 class Input_matrix {
+
+    template<typename>
+    struct is_std_array : std::false_type {};
+
+    template<typename U, std::size_t N>
+    struct is_std_array<std::array<U, N>> : std::true_type {};
+
+    template <typename U>
+    constexpr uint16_t deduce_input_type() {
+        if constexpr (std::is_base_of<Eigen::DenseBase<std::decay_t<U>>, std::decay_t<U>>::value) {
+            return 0;
+        } else if constexpr (is_std_array<std::decay_t<U>>::value) {
+            return 1;
+        }
+        return 2; 
+    }
+
     friend Layered_network;
 protected:
+
+    const T& _input;
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
     const uint16_t _layer_type = layer_types::INPUT;
+    const uint16_t _input_type; //Please don't change, will fix soon
 
-    const T& _input;
 
 public:
-    Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network) {
-        
-    };
+    Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
     ~Input_matrix() {};
 
     uint64_t getID() {return _ID; };
-    void debugStatus(){
+    const void debugStatus(){
         bool was_synced = std::ios::sync_with_stdio();
         std::ios::sync_with_stdio(false);
         std::cout << "The ID of this layer is: " << _ID << "\n";
-        std::cout << "The saved reference to the input array/matrix is:\n" << _input << "\n";
+        switch (_input_type)
+        {
+        case (0):
+            std::cout << "The type of this layer's input is a Eigen compatable type\n";
+            break;
+        case (1):
+            std::cout << "The type of this layer's input is an std::array type, will be useable\n";
+            break;
+        case (2):
+            std::cout << "The type of this layer's input is an unknown type, consider UB\n";
+            break;
+        default:
+            break;
+        }
         std::ios::sync_with_stdio(was_synced);
     }
 };
@@ -132,12 +164,11 @@ private:
     slate and no weirdness, right now it just removes
     'empty' layers */
     void deleteLayers();
-
+    const bool existing_ID(const u_int64_t& id);
 
 public:
     Layered_network() {
-        _layers.reserve(10);
-        _dense_settings.reserve(10);
+
     };
     ~Layered_network() {};
 
@@ -145,7 +176,7 @@ public:
     void addLayer(const Input_matrix<T>& layer) {
         deleteLayers();
         for (auto layer_i : _layers){
-            if(std::get<0>(layer_i) == INPUT) {
+            if(existing_ID(layer._ID)) {
                 std::cerr << "Only one input layer permitted... this has done nothing!\n";
                 return;
             }
