@@ -75,26 +75,7 @@ public:
     ~Input_matrix() {};
 
     uint64_t getID() {return _ID; };
-    const void debugStatus(){
-        bool was_synced = std::ios::sync_with_stdio();
-        std::ios::sync_with_stdio(false);
-        std::cout << "The ID of this layer is: " << _ID << "\n";
-        switch (_input_type)
-        {
-        case (0):
-            std::cout << "The type of this layer's input is a Eigen compatable type\n";
-            break;
-        case (1):
-            std::cout << "The type of this layer's input is an std::array type, will be useable\n";
-            break;
-        case (2):
-            std::cout << "The type of this layer's input is an unknown type, consider UB\n";
-            break;
-        default:
-            break;
-        }
-        std::ios::sync_with_stdio(was_synced);
-    }
+    const void debugStatus();
     
 };
 
@@ -116,7 +97,7 @@ protected:
     void (*_activation)(const Eigen::ArrayXf&);
 
 public:
-    Dense_layer(std::size_t width, Layered_network& network) : _width(width), _network(network) {};
+    Dense_layer(std::size_t width, const Layered_network& network) : _width(width), _network(network) {};
     ~Dense_layer() {};
 
     uint64_t getID() {return _ID; };
@@ -132,7 +113,7 @@ protected:
 
 
 public:
-    Output_matrix(Layered_network& network) : _network(network) {};
+    Output_matrix(const Layered_network& network) : _network(network) {};
     ~Output_matrix() {};
 
     uint64_t getID() {return _ID; };
@@ -162,7 +143,7 @@ private:
     before many other operations to make sure a clean
     slate and no weirdness, right now it just removes
     'empty' layers */
-    void deleteLayers();
+    void deleteLayers(const uint64_t ID);
     const bool existing_ID(const u_int64_t& id);
 
 public:
@@ -173,7 +154,6 @@ public:
 
     template <Sia::INTERNAL::is_valid T>
     void addLayer(const Input_matrix<T>& layer) {
-        deleteLayers();
         for (auto layer_i : _layers){
             if(existing_ID(layer._ID)) {
                 std::cerr << "Only one input layer permitted... this has done nothing!\n";
@@ -187,4 +167,3 @@ public:
 };
 
 } // Namespace end scope
-

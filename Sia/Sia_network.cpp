@@ -1,44 +1,40 @@
 #include "Sia_network.hpp"
 
 /**
- * This method is used to delete layers in a neural network.
+ * This method is used to delete specific layers in a neural network.
  * The layers are stored in the '_layers' vector. Each layer is a tuple where:
  * - the first element represents the type of the layer,
- * - the second element is the ID of the layer, normally a large random number, I'm using a 0 to mark it for deletion,
- * - the third element is the index of any settings/matricies/whatever for that specific layer.
+ * - the second element is the ID of the layer. A layer is deleted if its ID matches the input ID,
+ * - the third element is the index of the settings/matrices for that specific layer in their respective storage.
  *
- * The method iterates over the '_layers' vector. If it finds a layer that is marked for deletion (second element of the tuple is 0),
- * it removes the layer from the '_layers' vector and also deletes its settings from the corresponding settings vector.
-*/
-void Sia::Layered_network::deleteLayers() {
+ * The method iterates over the '_layers' vector. If it finds a valid layer ID (second element of the tuple matches the input ID),
+ * it removes the layer from the '_layers' vector and also deletes its settings from the corresponding settings vector based on the layer type.
+ */
+void Sia::Layered_network::deleteLayers(const uint64_t ID) {
     if (_layers.empty()) {
         return;
     }
-
     std::size_t index = 0;
     for (auto &layer : _layers) {
-        int layer_type;
-        int setting_index;
 
-        if (std::get<1>(layer) == 0) {
-            layer_type = std::get<0>(layer);
-            setting_index = std::get<2>(layer);
-
+        if (std::get<1>(layer) == ID) {
+            u_int16_t layer_type = std::get<0>(layer);
+            u_int32_t setting_index = std::get<2>(layer);
             _layers.erase(_layers.begin() + index);
-
-            if (layer_type != 0) {
-                switch(layer_type) {
-                    case (1): {
-                        _dense_settings.erase(_dense_settings.begin() + setting_index);
-                        break;
-                    }
-                    default:
-                        break;
+            switch(layer_type) {
+                case (1): {
+                    _dense_settings.erase(_dense_settings.begin() + setting_index);
+                    break;
                 }
+                default:
+                    break;
             }
+            goto END;
         }
         ++index;
     }
+    END:
+    return;
 }
 
 /**
