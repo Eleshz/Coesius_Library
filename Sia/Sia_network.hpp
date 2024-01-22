@@ -31,30 +31,44 @@ class Layered_network;
 namespace INTERNAL{
 
 template <typename T>
-concept is_fixed_size_eigen_matrix_or_vector = requires(T t) {
+concept eigen_fixed_1D = requires(T t) {
+    { t.size() } -> std::same_as<std::ptrdiff_t>;
+    { t(0) } -> std::same_as<typename T::Scalar&>;
+    requires T::SizeAtCompileTime != Eigen::Dynamic;
+    requires std::is_base_of_v<Eigen::DenseBase<T>, T> && T::RowsAtCompileTime == 1;
+};
+
+template <typename T>
+concept eigen_fixed_2D = requires(T t) {
     { t.rows() } -> std::same_as<std::ptrdiff_t>;
     { t.cols() } -> std::same_as<std::ptrdiff_t>;
     { t(0, 0) } -> std::same_as<float&>;
     requires T::RowsAtCompileTime != Eigen::Dynamic;
     requires T::ColsAtCompileTime != Eigen::Dynamic;
+    requires T::RowsAtCompileTime != 1;
 };
 
 template <typename T>
-concept is_valid = requires(T t) {
-    { t.size() } -> std::same_as<std::size_t>;
-    { t[0] } -> std::same_as<float&>;
-} || is_fixed_size_eigen_matrix_or_vector<T>;
+struct is_std_array : std::false_type {};
 
-}
+template <typename T, std::size_t N>
+struct is_std_array<std::array<T, N>> : std::true_type {};
+
+template <typename T>
+concept std_array_eigen_fixed_2D = requires(T t) {
+    requires is_std_array<T>::value;
+    requires eigen_fixed_2D<typename T::value_type>;
+};
+
+template <typename T>
+concept is_valid = eigen_fixed_1D<T> || eigen_fixed_2D<T> || std_array_eigen_fixed_2D<T>;
+
+} // INTERNAL end scope
 
 template <Sia::INTERNAL::is_valid T>
 class Input_matrix {
 
-    template<typename>
-    struct is_std_array : std::false_type {};
 
-    template<typename U, std::size_t N>
-    struct is_std_array<std::array<U, N>> : std::true_type {};
 
     template <typename U>
     constexpr uint16_t deduce_input_type();
@@ -134,10 +148,10 @@ private:
     std::vector<Eigen::ArrayXf> _map_arrays; // Array for the final map of the network
     std::vector<void (*)(const Eigen::ArrayXf&)> _map_functions; // Array functions for the final map of the network
 // Input stuff ----------------------------------------------------------------------------------------------------------------------------
-    matrix_types _input_settings; // Just saves whether it's a 1/2/3 dimensional input
+    std::tuple<uint16_t, matrix_types> _input_settings; // Just saves whether it's a 1/2/3 dimensional input
 // Dense stuff ----------------------------------------------------------------------------------------------------------------------------
     // (Layer width, activation function, activation function derivative, using a bias, using the weights, unique ID)
-    std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings; // 
+    std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings;
 
     /* Cleans up all removed layers and settings, used
     before many other operations to make sure a clean
@@ -153,17 +167,10 @@ public:
     ~Layered_network() {};
 
     template <Sia::INTERNAL::is_valid T>
-    void addLayer(const Input_matrix<T>& layer) {
-        for (auto layer_i : _layers){
-            if(existing_ID(layer._ID)) {
-                std::cerr << "Only one input layer permitted... this has done nothing!\n";
-                return;
-            }
-        }
-        _layers.emplace_back(INPUT, (layer._ID), _layers.size()-1);
-        _matricies[_layers.size()-1] = layer._input;
-    }
+    void addLayer(const Input_matrix<T>& layer);
     
 };
+
+#include "Sia_network.ipp"
 
 } // Namespace end scope

@@ -1,12 +1,16 @@
+
+
 template <Sia::INTERNAL::is_valid S>
 template <typename U>
 constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
-    if constexpr (std::is_base_of<Eigen::DenseBase<std::decay_t<U>>, std::decay_t<U>>::value) {
-        return 0;
-    } else if constexpr (is_std_array<std::decay_t<U>>::value) {
+    if constexpr (Sia::INTERNAL::eigen_fixed_1D<U>) {
         return 1;
+    } else if constexpr (Sia::INTERNAL::eigen_fixed_2D<U>) {
+        return 2;
+    } else if constexpr (Sia::INTERNAL::std_array_eigen_fixed_2D<U>) {
+        return 3;
     }
-    return 2; 
+    return 4; 
 }
 
 template <Sia::INTERNAL::is_valid S>
@@ -15,14 +19,15 @@ const void Sia::Input_matrix<S>::debugStatus(){
     std::ios::sync_with_stdio(false);
     std::cout << "The ID of this layer is: " << _ID << "\n";
     switch (_input_type) {
-    case (0):
-        std::cout << "The type of this layer's input is a Eigen compatable type\n";
-        break;
     case (1):
-        std::cout << "The type of this layer's input is an std::array type, will be useable\n";
+        std::cout << "One dimensional Eigen array/matrix used\n";
         break;
     case (2):
-        std::cout << "The type of this layer's input is an unknown type, consider UB\n";
+        std::cout << "Two dimensional Eigen array/matrix used:\n";
+        break;
+    case (3):
+        std::cout << "Three dimensional Eigen array/matrix used\n";
+
         break;
     default:
         break;
