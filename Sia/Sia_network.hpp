@@ -34,6 +34,7 @@ template <typename T>
 concept eigen_fixed_1D = requires(T t) {
     { t.size() } -> std::same_as<std::ptrdiff_t>;
     { t(0) } -> std::same_as<typename T::Scalar&>;
+    { t(0) } -> std::same_as<float&>;
     requires T::SizeAtCompileTime != Eigen::Dynamic;
     requires std::is_base_of_v<Eigen::DenseBase<T>, T> && T::RowsAtCompileTime == 1;
 };
@@ -68,12 +69,11 @@ concept is_valid = eigen_fixed_1D<T> || eigen_fixed_2D<T> || std_array_eigen_fix
 template <Sia::INTERNAL::is_valid T>
 class Input_matrix {
 
-
-
     template <typename U>
     constexpr uint16_t deduce_input_type();
 
     friend Layered_network;
+    
 protected:
 
     const T& _input;
