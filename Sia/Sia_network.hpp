@@ -89,7 +89,7 @@ public:
     ~Input_matrix() {};
 
     uint64_t getID() {return _ID; };
-    const void debugStatus();
+    void debugStatus();
     
 };
 
@@ -104,14 +104,14 @@ protected:
     const uint64_t _ID = RANDOM_UINT64T();
     const uint16_t _layer_type = layer_types::INPUT;
 
-    Eigen::ArrayXf* _output;
+    Eigen::ArrayXf* _output = nullptr;
     const std::size_t _width;
     bool use_bias = true;
     bool use_weights = true;
-    void (*_activation)(const Eigen::ArrayXf&);
+    void (*_activation)(const Eigen::ArrayXf&) = nullptr;
 
 public:
-    Dense_layer(std::size_t width, const Layered_network& network) : _width(width), _network(network) {};
+    explicit Dense_layer(std::size_t width, const Layered_network& network) : _network(network), _width(width) {};
     ~Dense_layer() {};
 
     uint64_t getID() {return _ID; };
@@ -127,7 +127,7 @@ protected:
 
 
 public:
-    Output_matrix(const Layered_network& network) : _network(network) {};
+    explicit Output_matrix(const Layered_network& network) : _network(network) {};
     ~Output_matrix() {};
 
     uint64_t getID() {return _ID; };
@@ -158,10 +158,10 @@ private:
     slate and no weirdness, right now it just removes
     'empty' layers */
     void deleteLayers(const uint64_t ID);
-    const bool existing_ID(const u_int64_t& id);
+    bool existing_ID(const u_int64_t& id);
 
 public:
-    Layered_network() {
+    explicit Layered_network() {
 
     };
     ~Layered_network() {};

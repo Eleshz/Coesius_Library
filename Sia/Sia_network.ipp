@@ -2,7 +2,7 @@ void Sia::Layered_network::deleteLayers(const uint64_t ID) {
     if (_layers.empty()) {
         return;
     }
-    std::size_t index = 0;
+    std::ptrdiff_t index = 0;
     for (auto &layer : _layers) {
 
         if (std::get<1>(layer) == ID) {
@@ -25,7 +25,7 @@ void Sia::Layered_network::deleteLayers(const uint64_t ID) {
     return;
 }
 
-const bool Sia::Layered_network::existing_ID(const u_int64_t &id) {
+bool Sia::Layered_network::existing_ID(const u_int64_t &id) {
     for (auto layer : _layers){
         if(std::get<1>(layer) == id)
             return true;

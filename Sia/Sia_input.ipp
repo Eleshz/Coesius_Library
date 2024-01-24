@@ -1,5 +1,3 @@
-
-
 template <Sia::INTERNAL::is_valid S>
 template <typename U>
 constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
@@ -14,7 +12,7 @@ constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
 }
 
 template <Sia::INTERNAL::is_valid S>
-const void Sia::Input_matrix<S>::debugStatus(){
+void Sia::Input_matrix<S>::debugStatus(){
     bool was_synced = std::ios::sync_with_stdio();
     std::ios::sync_with_stdio(false);
     std::cout << "The ID of this layer is: " << _ID << "\n";
