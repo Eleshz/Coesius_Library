@@ -141,10 +141,10 @@ private:
 // General network stuff ------------------------------------------------------------------------------------------------------------------
     std::vector<std::tuple<layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
     std::vector<std::pair<uint64_t, uint64_t>> _links; // (Two unique IDs that represent a link, first is head, second is tail)
-    std::vector<Eigen::MatrixXf> _matricies; // Stores whatever matricies the network needs, layers-anything
+    std::vector<Eigen::MatrixXf> _matrices; // Stores whatever matrices the network needs, layers-anything
     std::vector<Eigen::ArrayXf> _arrays;  // Stores whatever arrays the network needs, layers-anything
 
-    std::vector<Eigen::MatrixXf> _map_matricies; // Matricies for the final map of the network
+    std::vector<Eigen::MatrixXf> _map_matrices; // Matrices for the final map of the network
     std::vector<Eigen::ArrayXf> _map_arrays; // Array for the final map of the network
     std::vector<void (*)(const Eigen::ArrayXf&)> _map_functions; // Array functions for the final map of the network
 // Input stuff ----------------------------------------------------------------------------------------------------------------------------
@@ -153,11 +153,8 @@ private:
     // (Layer width, activation function, activation function derivative, using a bias, using the weights, unique ID)
     std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings;
 
-    /* Cleans up all removed layers and settings, used
-    before many other operations to make sure a clean
-    slate and no weirdness, right now it just removes
-    'empty' layers */
-    void deleteLayers(const uint64_t ID);
+    /* Cleans up the given layer by ID, removing all settings and purging the network of it's very existence */
+    void deleteLayer(const uint64_t ID);
     bool existing_ID(const u_int64_t& id);
 
 public:

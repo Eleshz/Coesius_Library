@@ -1,4 +1,4 @@
-void Sia::Layered_network::deleteLayers(const uint64_t ID) {
+void Sia::Layered_network::deleteLayer(const uint64_t ID) {
     if (_layers.empty()) {
         return;
     }
@@ -42,5 +42,5 @@ void Sia::Layered_network::addLayer(const Sia::Input_matrix<T>& layer) {
         }
     }
     _layers.emplace_back(INPUT, (layer._ID), _layers.size()-1);
-    _matricies[_layers.size()-1] = layer._input;
+    _matrices[_layers.size()-1] = layer._input;
 }
