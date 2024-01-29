@@ -11,7 +11,7 @@ void Sia::Layered_network::delete_layer(const uint64_t ID) {
             u_int32_t setting_index = std::get<2>(layer);
             _layers.erase(_layers.begin() + index);
             if(layer_type == 1) {
-                _dense_settings.erase(_dense_settings.begin() + setting_index);
+                settings_delete(layer_types::INPUT, setting_index);
             }
             std::for_each(_layers.begin() + index, _layers.end(), [&](auto& lambda_layer){--std::get<2>(lambda_layer);});
             break;
@@ -26,6 +26,7 @@ void Sia::Layered_network::settings_delete(const uint8_t type, const uint32_t in
     case layer_types::INPUT:
         std::get<0>(_input_settings) = 0;
         std::get<1>(_input_settings) = matrix_types::type_NAN;
+        _dense_settings.erase(_dense_settings.begin() + index);
         break;
     case layer_types::DENSE:
 
@@ -99,8 +100,8 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
     
     conditional_reserve();
 
-    for (auto layer_i : _layers){
-        if(existing_ID(layer._ID)) {
+    for (std::tuple<layer_types, uint64_t, uint64_t> layer_i : _layers){
+        if(existing_ID(std::get<2>(layer_i))) {
             std::cerr << "Only one input layer permitted... this has done nothing!\n";
             return;
         }
