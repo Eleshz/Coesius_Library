@@ -21,7 +21,8 @@ enum layer_types {
 enum matrix_types {
     ONE_D = 0,
     TWO_D,
-    THREE_D
+    THREE_D,
+    type_NAN
 };
 
 namespace Sia { // Start namespace scope
@@ -30,8 +31,10 @@ class Layered_network;
 
 namespace INTERNAL{
 
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
 template <typename T>
-concept eigen_fixed_1D = requires(T t) {
+concept is_valid_1D_matrix = requires(T t) {
     { t.size() } -> std::same_as<std::ptrdiff_t>;
     { t(0) } -> std::same_as<typename T::Scalar&>;
     { t(0) } -> std::same_as<float&>;
@@ -40,7 +43,7 @@ concept eigen_fixed_1D = requires(T t) {
 };
 
 template <typename T>
-concept eigen_fixed_2D = requires(T t) {
+concept is_valid_2D_matrix = requires(T t) {
     { t.rows() } -> std::same_as<std::ptrdiff_t>;
     { t.cols() } -> std::same_as<std::ptrdiff_t>;
     { t(0, 0) } -> std::same_as<float&>;
@@ -56,13 +59,15 @@ template <typename T, std::size_t N>
 struct is_std_array<std::array<T, N>> : std::true_type {};
 
 template <typename T>
-concept std_array_eigen_fixed_2D = requires(T t) {
+concept is_valid_3D_matrix = requires(T t) {
     requires is_std_array<T>::value;
-    requires eigen_fixed_2D<typename T::value_type>;
+    requires is_valid_2D_matrix<typename T::value_type>;
 };
 
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 template <typename T>
-concept is_valid = eigen_fixed_1D<T> || eigen_fixed_2D<T> || std_array_eigen_fixed_2D<T>;
+concept is_valid = is_valid_1D_matrix<T> || is_valid_2D_matrix<T> || is_valid_3D_matrix<T>;
 
 } // INTERNAL end scope
 
@@ -80,12 +85,13 @@ protected:
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint16_t _layer_type = layer_types::INPUT;
+    const uint8_t _layer_type = layer_types::INPUT;
     const uint16_t _input_type;
 
 
 public:
     Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
+
     ~Input_matrix() {};
 
     uint64_t getID() {return _ID; };
@@ -102,10 +108,10 @@ protected:
 // Settings
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint16_t _layer_type = layer_types::INPUT;
+    const uint8_t _layer_type = layer_types::DENSE;
 
     Eigen::ArrayXf* _output = nullptr;
-    const std::size_t _width;
+    std::size_t _width;
     bool use_bias = true;
     bool use_weights = true;
     void (*_activation)(const Eigen::ArrayXf&) = nullptr;
@@ -123,7 +129,7 @@ protected:
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint16_t _layer_type = layer_types::OUTPUT;
+    const uint8_t _layer_type = layer_types::OUTPUT;
 
 
 public:
@@ -153,18 +159,36 @@ private:
     // (Layer width, activation function, activation function derivative, using a bias, using the weights, unique ID)
     std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings;
 
-    /* Cleans up the given layer by ID, removing all settings and purging the network of it's very existence */
-    void deleteLayer(const uint64_t ID);
-    bool existing_ID(const u_int64_t& id);
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------
+    /* Cleans up the given layer by ID, purging the network of it's very existence */
+    void delete_layer(const uint64_t ID);
+    /* Deletes the settings of a specific type, and uses the index to potentially update others to reflect that */
+    void settings_delete(const uint8_t type, const uint32_t index);
+    /* Returns true if the ID is in the network */
+    bool existing_ID(const u_int64_t& ID);
+    /* Reserves more space in the vectors that need it, adds chunks of 10 at a time */
+    void conditional_reserve();
+
+void NewFunction();
+
+u_int64_t current_working_index_matrix = 0;
+u_int64_t current_working_index_array = 0;
+u_int64_t current_working_index_general = 0;
 
 public:
-    explicit Layered_network() {
-
-    };
+    explicit Layered_network() {};
     ~Layered_network() {};
 
-    template <Sia::INTERNAL::is_valid T>
-    void addLayer(const Input_matrix<T>& layer);
+    template <Sia::INTERNAL::is_valid_1D_matrix T>
+    void add_layer(const Input_matrix<T>& layer);
+    
+    template <Sia::INTERNAL::is_valid_2D_matrix T>
+    void add_layer(const Input_matrix<T>& layer);
+
+    template <Sia::INTERNAL::is_valid_3D_matrix T>
+    void add_layer(const Input_matrix<T>& layer);
     
 };
 

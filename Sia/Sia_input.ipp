@@ -1,11 +1,11 @@
 template <Sia::INTERNAL::is_valid S>
 template <typename U>
 constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
-    if constexpr (Sia::INTERNAL::eigen_fixed_1D<U>) {
+    if constexpr (Sia::INTERNAL::is_valid_1D_matrix<U>) {
         return 1;
-    } else if constexpr (Sia::INTERNAL::eigen_fixed_2D<U>) {
+    } else if constexpr (Sia::INTERNAL::is_valid_2D_matrix<U>) {
         return 2;
-    } else if constexpr (Sia::INTERNAL::std_array_eigen_fixed_2D<U>) {
+    } else if constexpr (Sia::INTERNAL::is_valid_3D_matrix<U>) {
         return 3;
     }
     return 4; 
