@@ -13,7 +13,7 @@ constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
 
 template <Sia::INTERNAL::is_valid S>
 void Sia::Input_matrix<S>::debugStatus(){
-    bool was_synced = std::ios::sync_with_stdio();
+    bool sync_status = std::ios::sync_with_stdio();
     std::ios::sync_with_stdio(false);
     std::cout << "The ID of this layer is: " << _ID << "\n";
     switch (_input_type) {
@@ -30,5 +30,5 @@ void Sia::Input_matrix<S>::debugStatus(){
     default:
         break;
     }
-    std::ios::sync_with_stdio(was_synced);
+    std::ios::sync_with_stdio(sync_status);
 }

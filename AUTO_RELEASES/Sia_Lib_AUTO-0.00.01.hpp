@@ -16,13 +16,13 @@
 #include <random>
 
 static struct RandomUInt64T {
-    std::mt19937_64 gen;
-    std::uniform_int_distribution<uint64_t> dis;
+    std::mt19937_64 _gen;
+    std::uniform_int_distribution<uint64_t> _dis;
 
-    RandomUInt64T() : gen(std::random_device{}()), dis(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max()) {}
+    RandomUInt64T() : _gen(std::random_device{}()), _dis(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max()) {}
 
     uint64_t operator()() {
-        return dis(gen);
+        return _dis(_gen);
     }
 } RANDOM_UINT64T;
 enum layer_types {
@@ -218,9 +218,9 @@ private:
 
 void NewFunction();
 
-u_int64_t current_working_index_matrix = 0;
-u_int64_t current_working_index_array = 0;
-u_int64_t current_working_index_general = 0;
+u_int64_t _current_working_index_matrix = 0;
+u_int64_t _current_working_index_array = 0;
+u_int64_t _current_working_index_general = 0;
 
 public:
     explicit Layered_network() {};
@@ -288,14 +288,14 @@ void Sia::Layered_network::conditional_reserve(){
     // fair ~buffer~ before reallocating more memory, and 10 seems
     // like a good chunk to reserve
 
-    if ((_layers.capacity()-current_working_index_general)<=3) {
+    if ((_layers.capacity()-_current_working_index_general)<=3) {
         _layers.reserve(_layers.capacity()+10);
         _dense_settings.reserve(_dense_settings.capacity()+10);
     }
-    if ((_arrays.capacity()-current_working_index_array)<=3) {
+    if ((_arrays.capacity()-_current_working_index_array)<=3) {
         _arrays.reserve(_arrays.capacity()+10);
     }
-    if ((_matrices.capacity()-current_working_index_matrix)<=3) {
+    if ((_matrices.capacity()-_current_working_index_matrix)<=3) {
         _matrices.reserve(_matrices.capacity()+10);
     }
 }
@@ -311,10 +311,10 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
             return;
         }
     }
-    _layers.emplace_back(INPUT, (layer._ID), current_working_index_general);
-    _arrays[current_working_index_array] = layer._input;
-    ++current_working_index_array;
-    ++current_working_index_general;
+    _layers.emplace_back(INPUT, (layer._ID), _current_working_index_general);
+    _arrays[_current_working_index_array] = layer._input;
+    ++_current_working_index_array;
+    ++_current_working_index_general;
 }
 
 template <Sia::INTERNAL::is_valid_2D_matrix T>
@@ -328,10 +328,10 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
             return;
         }
     }
-    _layers.emplace_back(INPUT, (layer._ID), current_working_index_general);
-    _matrices[current_working_index_matrix] = layer._input;
-    ++current_working_index_matrix;
-    ++current_working_index_general;
+    _layers.emplace_back(INPUT, (layer._ID), _current_working_index_general);
+    _matrices[_current_working_index_matrix] = layer._input;
+    ++_current_working_index_matrix;
+    ++_current_working_index_general;
 }
 
 template <Sia::INTERNAL::is_valid_3D_matrix T>
@@ -345,11 +345,11 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
             return;
         }
     }
-    _layers.emplace_back(INPUT, (layer._ID), current_working_index_general);
-    _matrices[current_working_index_matrix] = layer._input[0];
-    _matrices[current_working_index_matrix+1] = layer._input[1];
-    _matrices[current_working_index_matrix+2] = layer._input[2];
-    current_working_index_matrix += 3;
-    ++current_working_index_general;
+    _layers.emplace_back(INPUT, (layer._ID), _current_working_index_general);
+    _matrices[_current_working_index_matrix] = layer._input[0];
+    _matrices[_current_working_index_matrix+1] = layer._input[1];
+    _matrices[_current_working_index_matrix+2] = layer._input[2];
+    _current_working_index_matrix += 3;
+    ++_current_working_index_general;
 }
 } // Namespace end scope
