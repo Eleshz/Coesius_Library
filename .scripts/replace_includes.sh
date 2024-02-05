@@ -30,32 +30,32 @@ new_version="$first_part.$middle_part.$last_part"
 echo $new_version > version.txt
 
 # Define the source and destination directories
-src_dir="Sia"
+src_dir="public/sia"
 dest_dir="AUTO_RELEASES"
 
 # Check if the file already exists in the destination directory
 if [ ! -f $dest_dir/Sia_network_full.hpp ]; then
     # Copy the file
-    cp $src_dir/Sia_network.hpp $dest_dir/Sia_network_full.hpp
+    cp $src_dir/network.hpp $dest_dir/network_full.hpp
 fi
 
 # For each .ipp include found
-grep -o '#include ".*\.ipp"' $dest_dir/Sia_network_full.hpp | while read -r line ; do
+grep -o '#include ".*\.ipp"' $dest_dir/network_full.hpp | while read -r line ; do
     # Extract the .ipp filename
     filename=$(echo $line | cut -d'"' -f 2)
 
     # Check if the .ipp file exists in the source directory
     if [ -f $src_dir/$filename ]; then
         # Replace the include line with the content of the .ipp file
-        sed -i "/$line/r $src_dir/$filename" $dest_dir/Sia_network_full.hpp
-        sed -i "/$line/d" $dest_dir/Sia_network_full.hpp
+        sed -i "/$line/r $src_dir/$filename" $dest_dir/network_full.hpp
+        sed -i "/$line/d" $dest_dir/network_full.hpp
     else
         echo "File $filename not found in $src_dir!"
     fi
 done
 
 # Rename the file with the version number
-mv $dest_dir/Sia_network_full.hpp $dest_dir/Sia_Lib_AUTO-$new_version.hpp
+mv $dest_dir/network_full.hpp $dest_dir/Sia_Lib_AUTO-$new_version.hpp
 
 # Echo the file to show it worked
 echo "Created file: $dest_dir/Sia_Lib_AUTO-$new_version.hpp"

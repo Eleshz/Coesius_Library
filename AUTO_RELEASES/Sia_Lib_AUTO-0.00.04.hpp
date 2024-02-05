@@ -10,7 +10,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Sia_general.ipp"
+#include <sia/general.ipp>
 
 enum layer_types {
     INPUT = 0,
@@ -99,7 +99,7 @@ public:
     
 };
 
-#include "Sia_input.ipp"
+#include <sia/input.ipp>
 
 class Dense_layer {
     friend Layered_network;
@@ -192,6 +192,6 @@ public:
     
 };
 
-#include "Sia_network.ipp"
+#include <sia/network.ipp>
 
 } // Namespace end scope
