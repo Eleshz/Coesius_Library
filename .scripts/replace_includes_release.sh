@@ -30,7 +30,7 @@ new_version="$first_part.$middle_part.$last_part"
 echo $new_version > version.txt
 
 # Define the source and destination directories
-src_dir="public/sia"
+src_dir="sia/dev"
 dest_dir="AUTO_RELEASES"
 
 # Check if the file already exists in the destination directory
@@ -59,8 +59,26 @@ grep -o '#include <.*\.ipp>' $dest_dir/network_full.hpp | while read -r line ; d
     fi
 done
 
+# First copy into the sia/public directory
+cp $dest_dir/network_full.hpp sia/public/sia_lib.hpp
+
 # Rename the file with the version number
 mv $dest_dir/network_full.hpp $dest_dir/Sia_Lib_AUTO-$new_version.hpp
+
+# Count the number of files in dest_dir
+file_count=$(ls -1q "$dest_dir" | wc -l)
+
+# Check if there are more than 5 files
+if [ $file_count -gt 5 ]; then
+  # Get the oldest file in dest_dir
+  oldest_file=$(ls -tr "$dest_dir" | head -n 1)
+
+  # Delete the oldest file
+  rm "$dest_dir/$oldest_file"
+  echo "Deleted the oldest file: $oldest_file"
+else 
+  echo "There are 5 or fewer files in $dest_dir. No files were deleted."
+fi
 
 # Echo the file to show it worked
 echo "Created file: $dest_dir/Sia_Lib_AUTO-$new_version.hpp"

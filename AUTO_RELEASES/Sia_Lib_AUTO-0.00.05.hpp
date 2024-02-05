@@ -25,6 +25,7 @@ static struct RandomUInt64T {
         return _dis(_gen);
     }
 } RANDOM_UINT64T;
+
 enum layer_types {
     INPUT = 0,
     OUTPUT,
@@ -127,7 +128,7 @@ constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
 
 template <Sia::INTERNAL::is_valid S>
 void Sia::Input_matrix<S>::debugStatus(){
-    bool was_synced = std::ios::sync_with_stdio();
+    bool sync_status = std::ios::sync_with_stdio();
     std::ios::sync_with_stdio(false);
     std::cout << "The ID of this layer is: " << _ID << "\n";
     switch (_input_type) {
@@ -144,8 +145,9 @@ void Sia::Input_matrix<S>::debugStatus(){
     default:
         break;
     }
-    std::ios::sync_with_stdio(was_synced);
+    std::ios::sync_with_stdio(sync_status);
 }
+
 class Dense_layer {
     friend Layered_network;
 protected:
@@ -208,11 +210,11 @@ private:
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
     /* Cleans up the given layer by ID, purging the network of it's very existence */
-    void delete_layer(const uint64_t ID);
+    void delete_layer(const uint64_t arg_ID);
     /* Deletes the settings of a specific type, and uses the index to potentially update others to reflect that */
-    void settings_delete(const uint8_t type, const uint32_t index);
+    void settings_delete(const uint8_t arg_type, const uint32_t arg_index);
     /* Returns true if the ID is in the network */
-    bool existing_ID(const u_int64_t& ID);
+    bool existing_ID(const u_int64_t& arg_ID);
     /* Reserves more space in the vectors that need it, adds chunks of 10 at a time */
     void conditional_reserve();
 
@@ -227,25 +229,25 @@ public:
     ~Layered_network() {};
 
     template <Sia::INTERNAL::is_valid_1D_matrix T>
-    void add_layer(const Input_matrix<T>& layer);
+    void add_layer(const Input_matrix<T>& arg_layer);
     
     template <Sia::INTERNAL::is_valid_2D_matrix T>
-    void add_layer(const Input_matrix<T>& layer);
+    void add_layer(const Input_matrix<T>& arg_layer);
 
     template <Sia::INTERNAL::is_valid_3D_matrix T>
-    void add_layer(const Input_matrix<T>& layer);
+    void add_layer(const Input_matrix<T>& arg_layer);
     
 };
 
 #include <algorithm>
 
-void Sia::Layered_network::delete_layer(const uint64_t ID) {
-    if (_layers.empty() || !existing_ID(ID)) {
+void Sia::Layered_network::delete_layer(const uint64_t arg_ID) {
+    if (_layers.empty() || !existing_ID(arg_ID)) {
         return;
     }
     std::ptrdiff_t index = 0;
     for (auto &layer : _layers) {
-        if (std::get<1>(layer) == ID) {
+        if (std::get<1>(layer) == arg_ID) {
             u_int16_t layer_type = std::get<0>(layer);
             u_int32_t setting_index = std::get<2>(layer);
             _layers.erase(_layers.begin() + index);
@@ -259,13 +261,13 @@ void Sia::Layered_network::delete_layer(const uint64_t ID) {
     }
 }
 
-void Sia::Layered_network::settings_delete(const uint8_t type, const uint32_t index) {
-    switch (type)
+void Sia::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
+    switch (arg_type)
     {
     case layer_types::INPUT:
         std::get<0>(_input_settings) = 0;
         std::get<1>(_input_settings) = matrix_types::type_NAN;
-        _dense_settings.erase(_dense_settings.begin() + index);
+        _dense_settings.erase(_dense_settings.begin() + arg_index);
         break;
     case layer_types::DENSE:
 
@@ -274,9 +276,9 @@ void Sia::Layered_network::settings_delete(const uint8_t type, const uint32_t in
     }
 }
 
-bool Sia::Layered_network::existing_ID(const u_int64_t& ID) {
+bool Sia::Layered_network::existing_ID(const u_int64_t& arg_ID) {
     for (auto layer : _layers){
-        if(std::get<1>(layer) == ID)
+        if(std::get<1>(layer) == arg_ID)
             return true;
     }
     return false;
@@ -301,43 +303,47 @@ void Sia::Layered_network::conditional_reserve(){
 }
 
 template <Sia::INTERNAL::is_valid_1D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
+void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
 
     conditional_reserve();
 
     for (auto layer_i : _layers){
-        if(existing_ID(layer._ID)) {
+        if(existing_ID(arg_layer._ID)) {
             std::cerr << "Only one input layer permitted... this has done nothing!\n";
             return;
         }
     }
-    _layers.emplace_back(INPUT, (layer._ID), _current_working_index_general);
-    _arrays[_current_working_index_array] = layer._input;
+    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
+    _arrays[_current_working_index_array] = arg_layer._input;
     ++_current_working_index_array;
     ++_current_working_index_general;
 }
 
 template <Sia::INTERNAL::is_valid_2D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
+void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
 
     for (auto layer_i : _layers){
-        if(existing_ID(layer._ID)) {
+        if(existing_ID(arg_layer._ID)) {
             std::cerr << "Only one input layer permitted... this has done nothing!\n";
             return;
         }
     }
-    _layers.emplace_back(INPUT, (layer._ID), _current_working_index_general);
-    _matrices[_current_working_index_matrix] = layer._input;
+    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
+    _matrices[_current_working_index_matrix] = arg_layer._input;
     ++_current_working_index_matrix;
     ++_current_working_index_general;
 }
 
 template <Sia::INTERNAL::is_valid_3D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
+void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
+
+    const std::size_t first_layer = 0;
+    const std::size_t second_layer = 1;
+    const std::size_t third_layer = 2;
 
     for (std::tuple<layer_types, uint64_t, uint64_t> layer_i : _layers){
         if(existing_ID(std::get<2>(layer_i))) {
@@ -345,11 +351,12 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& layer) {
             return;
         }
     }
-    _layers.emplace_back(INPUT, (layer._ID), _current_working_index_general);
-    _matrices[_current_working_index_matrix] = layer._input[0];
-    _matrices[_current_working_index_matrix+1] = layer._input[1];
-    _matrices[_current_working_index_matrix+2] = layer._input[2];
+    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
+    _matrices[_current_working_index_matrix] = arg_layer._input[first_layer];
+    _matrices[_current_working_index_matrix+1] = arg_layer._input[second_layer];
+    _matrices[_current_working_index_matrix+2] = arg_layer._input[third_layer];
     _current_working_index_matrix += 3;
     ++_current_working_index_general;
 }
+
 } // Namespace end scope
