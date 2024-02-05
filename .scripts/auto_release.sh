@@ -1,5 +1,5 @@
 # Change to the directory containing the files
-cd AUTO_RELEASES
+cd ../AUTO_RELEASES
 
 # Find the file with the highest version number
 highest_version_file=$(ls Sia_Lib_AUTO-*.hpp | sort -t- -k2 -V | tail -n1)

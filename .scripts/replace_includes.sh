@@ -1,3 +1,6 @@
+# Move to root
+cd ..
+
 # Read the version number and split it into an array
 IFS='.' read -ra version_parts <<< "$(cat version.txt)"
 
