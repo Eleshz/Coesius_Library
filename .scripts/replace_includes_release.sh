@@ -32,6 +32,7 @@ echo $new_version > version.txt
 # Define the source and destination directories
 src_dir="sia/dev"
 dest_dir="AUTO_RELEASES"
+cleaner=".scripts/clean_header.sh"
 
 # Check if the file already exists in the destination directory
 if [ ! -f $dest_dir/Sia_network_full.hpp ]; then
@@ -59,11 +60,10 @@ grep -o '#include <.*\.ipp>' $dest_dir/network_full.hpp | while read -r line ; d
     fi
 done
 
-# First copy into the sia/public directory
-cp $dest_dir/network_full.hpp sia/public/sia_lib.hpp
-
 # Rename the file with the version number
 mv $dest_dir/network_full.hpp $dest_dir/Sia_Lib_AUTO-$new_version.hpp
+
+$cleaner "$dest_dir/Sia_Lib_AUTO-$new_version.hpp"
 
 # Count the number of files in dest_dir
 file_count=$(ls -1q "$dest_dir" | wc -l)

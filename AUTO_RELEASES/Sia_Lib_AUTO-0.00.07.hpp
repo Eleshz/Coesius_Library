@@ -1,19 +1,14 @@
 #pragma once
-
 #include <Eigen/Dense>
-
-#include <vector>
-#include <cstdint>
-#include <span>
-#include <array>
-#include <type_traits>
-#include <iostream>
 #include <algorithm>
-
-
-#pragma once
-
+#include <array>
+#include <cstdint>
+#include <iostream>
 #include <random>
+#include <span>
+#include <type_traits>
+#include <vector>
+
 
 static struct RandomUInt64T {
     std::mt19937_64 _gen;
@@ -25,6 +20,7 @@ static struct RandomUInt64T {
         return _dis(_gen);
     }
 } RANDOM_UINT64T;
+
 enum layer_types {
     INPUT = 0,
     OUTPUT,
@@ -101,7 +97,6 @@ protected:
     const uint8_t _layer_type = layer_types::INPUT;
     const uint16_t _input_type;
 
-
 public:
     Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
 
@@ -146,6 +141,7 @@ void Sia::Input_matrix<S>::debugStatus(){
     }
     std::ios::sync_with_stdio(sync_status);
 }
+
 class Dense_layer {
     friend Layered_network;
 protected:
@@ -176,7 +172,6 @@ protected:
     const uint64_t _ID = RANDOM_UINT64T();
     const uint8_t _layer_type = layer_types::OUTPUT;
 
-
 public:
     explicit Output_matrix(const Layered_network& network) : _network(network) {};
     ~Output_matrix() {};
@@ -203,8 +198,6 @@ private:
 // Dense stuff ----------------------------------------------------------------------------------------------------------------------------
     // (Layer width, activation function, activation function derivative, using a bias, using the weights, unique ID)
     std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings;
-
-
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
     /* Cleans up the given layer by ID, purging the network of it's very existence */
@@ -236,8 +229,6 @@ public:
     void add_layer(const Input_matrix<T>& arg_layer);
     
 };
-
-#include <algorithm>
 
 void Sia::Layered_network::delete_layer(const uint64_t arg_ID) {
     if (_layers.empty() || !existing_ID(arg_ID)) {
@@ -356,4 +347,5 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     _current_working_index_matrix += 3;
     ++_current_working_index_general;
 }
+
 } // Namespace end scope
