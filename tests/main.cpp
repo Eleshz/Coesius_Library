@@ -1,4 +1,4 @@
-#include <sia/network.hpp>
+#include <sia/sia_lib.hpp>
 
 #include <array>
 #include <iostream>

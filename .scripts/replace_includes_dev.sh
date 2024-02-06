@@ -2,7 +2,7 @@
 cd ..
 
 src_dir="sia/dev"
-dest_dir="sia/public"
+dest_dir="sia/sia"
 cleaner=".scripts/clean_header.sh"
 
 cp $src_dir/network.hpp $dest_dir/sia_lib.hpp
