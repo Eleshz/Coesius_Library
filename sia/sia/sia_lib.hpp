@@ -10,6 +10,9 @@
 #include <vector>
 
 
+#ifndef SIA_LIB_H
+#define SIA_LIB_H
+
 static struct RandomUInt64T {
     std::mt19937_64 _gen;
     std::uniform_int_distribution<uint64_t> _dis;
@@ -349,3 +352,5 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
 }
 
 } // Namespace end scope
+
+#endif // No more Sia_lib

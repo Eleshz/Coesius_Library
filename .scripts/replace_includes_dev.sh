@@ -12,8 +12,8 @@ grep -o '#include <.*\.ipp>' $dest_dir/sia_lib.hpp | while read -r line ; do
     # Extract the .ipp filename
     filename=$(echo $line | cut -d'<' -f 2 | cut -d'>' -f 1)
 
-    # Remove the first directory from the filename
-    filename=${filename#*/}
+    # Remove the 'sia/dev/' from the filename
+    filename=${filename#$src_dir/}
 
     # Escape special characters in the line for use in awk
     line_escaped=$(echo $line | sed 's/[]\/$*.^[]/\\&/g')
