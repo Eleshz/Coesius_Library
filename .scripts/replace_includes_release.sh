@@ -30,19 +30,19 @@ new_version="$first_part.$middle_part.$last_part"
 echo $new_version > version.txt
 
 # Define the source and destination directories
-src_dir="sia/dev"
+src_dir="coesius/dev"
 dest_dir="AUTO_RELEASES"
 cleaner=".scripts/clean_header.sh"
 
 # Copy the file
-cp $src_dir/network.hpp $dest_dir/Sia_Lib_AUTO-$new_version.hpp
+cp $src_dir/network.hpp $dest_dir/Coesius_Lib_AUTO-$new_version.hpp
 
 # For each .ipp include found
-grep -o '#include <.*\.ipp>' $dest_dir/Sia_Lib_AUTO-$new_version.hpp | while read -r line ; do
+grep -o '#include <.*\.ipp>' $dest_dir/Coesius_Lib_AUTO-$new_version.hpp | while read -r line ; do
     # Extract the .ipp filename
     filename=$(echo $line | cut -d'<' -f 2 | cut -d'>' -f 1)
 
-    # Remove the 'sia/dev/' from the filename
+    # Remove the 'coesius/dev/' from the filename
     filename=${filename#$src_dir/}
 
     # Escape special characters in the line for use in awk
@@ -51,13 +51,13 @@ grep -o '#include <.*\.ipp>' $dest_dir/Sia_Lib_AUTO-$new_version.hpp | while rea
     # Check if the .ipp file exists in the source directory
     if [ -f $src_dir/$filename ]; then
         # Replace the include line with the content of the .ipp file
-        awk -v r="$src_dir/$filename" "/$line_escaped/{while((getline < r) > 0) print; next}1" $dest_dir/Sia_Lib_AUTO-$new_version.hpp > temp && mv temp $dest_dir/Sia_Lib_AUTO-$new_version.hpp
+        awk -v r="$src_dir/$filename" "/$line_escaped/{while((getline < r) > 0) print; next}1" $dest_dir/Coesius_Lib_AUTO-$new_version.hpp > temp && mv temp $dest_dir/Coesius_Lib_AUTO-$new_version.hpp
     else
         echo "File $filename not found in $src_dir!"
     fi
 done
 
-$cleaner "$dest_dir/Sia_Lib_AUTO-$new_version.hpp"
+$cleaner "$dest_dir/Coesius_Lib_AUTO-$new_version.hpp"
 
 # Count the number of files in dest_dir
 file_count=$(ls -1q "$dest_dir" | wc -l)
@@ -75,4 +75,4 @@ else
 fi
 
 # Echo the file to show it worked
-echo "Created file: $dest_dir/Sia_Lib_AUTO-$new_version.hpp"
+echo "Created file: $dest_dir/Coesius_Lib_AUTO-$new_version.hpp"

@@ -1,6 +1,6 @@
 #include <algorithm>
 
-void Sia::Layered_network::delete_layer(const uint64_t arg_ID) {
+void Coesius::Layered_network::delete_layer(const uint64_t arg_ID) {
     if (_layers.empty() || !existing_ID(arg_ID)) {
         return;
     }
@@ -20,7 +20,7 @@ void Sia::Layered_network::delete_layer(const uint64_t arg_ID) {
     }
 }
 
-void Sia::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
+void Coesius::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
     switch (arg_type)
     {
     case layer_types::INPUT:
@@ -35,7 +35,7 @@ void Sia::Layered_network::settings_delete(const uint8_t arg_type, const uint32_
     }
 }
 
-bool Sia::Layered_network::existing_ID(const u_int64_t& arg_ID) {
+bool Coesius::Layered_network::existing_ID(const u_int64_t& arg_ID) {
     for (auto layer : _layers){
         if(std::get<1>(layer) == arg_ID)
             return true;
@@ -43,7 +43,7 @@ bool Sia::Layered_network::existing_ID(const u_int64_t& arg_ID) {
     return false;
 }
 
-void Sia::Layered_network::conditional_reserve(){
+void Coesius::Layered_network::conditional_reserve(){
 
     // Both 3 and 10 are 'randomly' chosen numbers, 3 seems like a
     // fair ~buffer~ before reallocating more memory, and 10 seems
@@ -61,8 +61,8 @@ void Sia::Layered_network::conditional_reserve(){
     }
 }
 
-template <Sia::INTERNAL::is_valid_1D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
+template <Coesius::INTERNAL::is_valid_1D_matrix T>
+void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
 
     conditional_reserve();
 
@@ -78,8 +78,8 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     ++_current_working_index_general;
 }
 
-template <Sia::INTERNAL::is_valid_2D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
+template <Coesius::INTERNAL::is_valid_2D_matrix T>
+void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
 
@@ -95,8 +95,8 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     ++_current_working_index_general;
 }
 
-template <Sia::INTERNAL::is_valid_3D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
+template <Coesius::INTERNAL::is_valid_3D_matrix T>
+void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
 

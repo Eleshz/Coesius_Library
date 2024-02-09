@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(SiaLibrary VERSION 0.0.3)
+project(CoesiusLibrary VERSION 0.0.3)
 
 #=============================================================================
 # Local settings
@@ -34,62 +34,62 @@ find_package(GTest REQUIRED)
 #=============================================================================
 # Targets
 
-# Sia
-add_library(Sia INTERFACE)
-target_sources(Sia INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sia/sia/sia_lib.hpp>
+# Coesius
+add_library(Coesius INTERFACE)
+target_sources(Coesius INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/coesius/coesius_lib.hpp>
 )
-target_compile_features(Sia INTERFACE cxx_std_23)
-target_include_directories(Sia INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sia>
+target_compile_features(Coesius INTERFACE cxx_std_23)
+target_include_directories(Coesius INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(Sia INTERFACE Eigen3::Eigen)
+target_link_libraries(Coesius INTERFACE Eigen3::Eigen)
 
 # v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^
 
-# Sia DEV
-add_library(Sia_DEV INTERFACE)
-target_sources(Sia_DEV INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sia/dev/network.hpp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sia/dev/network.ipp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sia/dev/input.ipp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/sia/dev/general.ipp>
+# Coesius DEV
+add_library(Coesius_DEV INTERFACE)
+target_sources(Coesius_DEV INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/network.hpp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/network.ipp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/input.ipp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/general.ipp>
 )
-target_compile_features(Sia_DEV INTERFACE cxx_std_23)
-target_include_directories(Sia_DEV INTERFACE
+target_compile_features(Coesius_DEV INTERFACE cxx_std_23)
+target_include_directories(Coesius_DEV INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
-target_link_libraries(Sia_DEV INTERFACE Eigen3::Eigen)
+target_link_libraries(Coesius_DEV INTERFACE Eigen3::Eigen)
 
 #=============================================================================
 
-# SiaLibrary LOCAL
+# CoesiusLibrary LOCAL
 add_executable(DEV development/main.cpp)
-target_link_libraries(DEV PRIVATE benchmark::benchmark Sia_DEV)
+target_link_libraries(DEV PRIVATE benchmark::benchmark Coesius_DEV)
 
-# SiaLibrary TESTING
+# CoesiusLibrary TESTING
 enable_testing()
 include(CTest)
 
 # Test 1
 add_executable(testing_1 tests/test_1.cpp)
-target_link_libraries(testing_1 PRIVATE Sia_DEV GTest::GTest GTest::Main benchmark::benchmark)
+target_link_libraries(testing_1 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_1 COMMAND testing_1)
 
 # Test 2
 add_executable(testing_2 tests/test_2.cpp)
-target_link_libraries(testing_2 PRIVATE Sia_DEV GTest::GTest GTest::Main benchmark::benchmark)
+target_link_libraries(testing_2 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_2 COMMAND testing_2)
 
 # Test 3
 add_executable(testing_3 tests/test_3.cpp)
-target_link_libraries(testing_3 PRIVATE Sia_DEV GTest::GTest GTest::Main benchmark::benchmark)
+target_link_libraries(testing_3 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_3 COMMAND testing_3)
 
 #=============================================================================
 # Install
 
-install(TARGETS Sia EXPORT Sia)
-install(DIRECTORY sia/ TYPE INCLUDE)
-install(EXPORT Sia DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Sia NAMESPACE Sia::)
+install(TARGETS Coesius EXPORT Coesius)
+install(DIRECTORY coesius/ TYPE INCLUDE)
+install(EXPORT Coesius DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/coesius NAMESPACE coesius::)

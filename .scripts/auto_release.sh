@@ -2,7 +2,7 @@
 cd ../AUTO_RELEASES
 
 # Find the file with the highest version number
-highest_version_file=$(ls Sia_Lib_AUTO-*.hpp | sort -t- -k2 -V | tail -n1)
+highest_version_file=$(ls Coesius_Lib_AUTO-*.hpp | sort -t- -k2 -V | tail -n1)
 
 # Extract the version number from the file name
 version=$(echo $highest_version_file | grep -oP '(?<=-).*(?=.hpp)')

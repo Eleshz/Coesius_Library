@@ -10,10 +10,10 @@
 #include <iostream>
 #include <algorithm>
 
-#ifndef SIA_LIB_H
-#define SIA_LIB_H
+#ifndef COESIUS_LIB_H
+#define COESIUS_LIB_H
 
-#include <sia/dev/general.ipp>
+#include <coesius/dev/general.ipp>
 
 enum layer_types {
     INPUT = 0,
@@ -28,7 +28,7 @@ enum matrix_types {
     type_NAN
 };
 
-namespace Sia { // Start namespace scope
+namespace Coesius { // Start namespace scope
 
 class Layered_network;
 
@@ -74,7 +74,7 @@ concept is_valid = is_valid_1D_matrix<T> || is_valid_2D_matrix<T> || is_valid_3D
 
 } // INTERNAL end scope
 
-template <Sia::INTERNAL::is_valid T>
+template <Coesius::INTERNAL::is_valid T>
 class Input_matrix {
 
     template <typename U>
@@ -93,7 +93,7 @@ protected:
 
 
 public:
-    Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
+    Input_matrix(const T& input, const Coesius::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
 
     ~Input_matrix() {};
 
@@ -102,7 +102,7 @@ public:
     
 };
 
-#include <sia/dev/input.ipp>
+#include <coesius/dev/input.ipp>
 
 class Dense_layer {
     friend Layered_network;
@@ -184,19 +184,19 @@ public:
     explicit Layered_network() {};
     ~Layered_network() {};
 
-    template <Sia::INTERNAL::is_valid_1D_matrix T>
+    template <Coesius::INTERNAL::is_valid_1D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
     
-    template <Sia::INTERNAL::is_valid_2D_matrix T>
+    template <Coesius::INTERNAL::is_valid_2D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
 
-    template <Sia::INTERNAL::is_valid_3D_matrix T>
+    template <Coesius::INTERNAL::is_valid_3D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
     
 };
 
-#include <sia/dev/network.ipp>
+#include <coesius/dev/network.ipp>
 
 } // Namespace end scope
 
-#endif // No more Sia_lib
+#endif // No more Coesius_lib

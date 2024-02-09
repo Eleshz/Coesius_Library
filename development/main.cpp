@@ -1,4 +1,4 @@
-#include <sia/dev/network.hpp>
+#include <coesius/dev/network.hpp>
 
 #include <array>
 #include <iostream>
@@ -16,8 +16,8 @@ int main(){
     eigenMatrix3D[1] << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0; // cppcheck-suppress constStatement // TESTING
     eigenMatrix3D[2] << 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0; // cppcheck-suppress constStatement // TESTING
 
-    Sia::Layered_network network;
-    Sia::Input_matrix input(eigenMatrix3D, network);
+    Coesius::Layered_network network;
+    Coesius::Input_matrix input(eigenMatrix3D, network);
 
     network.add_layer(input);
 

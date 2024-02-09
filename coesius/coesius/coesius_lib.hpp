@@ -10,6 +10,9 @@
 #include <vector>
 
 
+#ifndef COESIUS_LIB_H
+#define COESIUS_LIB_H
+
 static struct RandomUInt64T {
     std::mt19937_64 _gen;
     std::uniform_int_distribution<uint64_t> _dis;
@@ -34,7 +37,7 @@ enum matrix_types {
     type_NAN
 };
 
-namespace Sia { // Start namespace scope
+namespace Coesius { // Start namespace scope
 
 class Layered_network;
 
@@ -80,7 +83,7 @@ concept is_valid = is_valid_1D_matrix<T> || is_valid_2D_matrix<T> || is_valid_3D
 
 } // INTERNAL end scope
 
-template <Sia::INTERNAL::is_valid T>
+template <Coesius::INTERNAL::is_valid T>
 class Input_matrix {
 
     template <typename U>
@@ -98,7 +101,7 @@ protected:
     const uint16_t _input_type;
 
 public:
-    Input_matrix(const T& input, const Sia::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
+    Input_matrix(const T& input, const Coesius::Layered_network& network) : _input(input), _network(network), _input_type(deduce_input_type<T>()) {};
 
     ~Input_matrix() {};
 
@@ -107,21 +110,21 @@ public:
     
 };
 
-template <Sia::INTERNAL::is_valid S>
+template <Coesius::INTERNAL::is_valid S>
 template <typename U>
-constexpr uint16_t Sia::Input_matrix<S>::deduce_input_type() {
-    if constexpr (Sia::INTERNAL::is_valid_1D_matrix<U>) {
+constexpr uint16_t Coesius::Input_matrix<S>::deduce_input_type() {
+    if constexpr (Coesius::INTERNAL::is_valid_1D_matrix<U>) {
         return 1;
-    } else if constexpr (Sia::INTERNAL::is_valid_2D_matrix<U>) {
+    } else if constexpr (Coesius::INTERNAL::is_valid_2D_matrix<U>) {
         return 2;
-    } else if constexpr (Sia::INTERNAL::is_valid_3D_matrix<U>) {
+    } else if constexpr (Coesius::INTERNAL::is_valid_3D_matrix<U>) {
         return 3;
     }
     return 4; 
 }
 
-template <Sia::INTERNAL::is_valid S>
-void Sia::Input_matrix<S>::debugStatus(){
+template <Coesius::INTERNAL::is_valid S>
+void Coesius::Input_matrix<S>::debugStatus(){
     bool sync_status = std::ios::sync_with_stdio();
     std::ios::sync_with_stdio(false);
     std::cout << "The ID of this layer is: " << _ID << "\n";
@@ -219,18 +222,18 @@ public:
     explicit Layered_network() {};
     ~Layered_network() {};
 
-    template <Sia::INTERNAL::is_valid_1D_matrix T>
+    template <Coesius::INTERNAL::is_valid_1D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
     
-    template <Sia::INTERNAL::is_valid_2D_matrix T>
+    template <Coesius::INTERNAL::is_valid_2D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
 
-    template <Sia::INTERNAL::is_valid_3D_matrix T>
+    template <Coesius::INTERNAL::is_valid_3D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
     
 };
 
-void Sia::Layered_network::delete_layer(const uint64_t arg_ID) {
+void Coesius::Layered_network::delete_layer(const uint64_t arg_ID) {
     if (_layers.empty() || !existing_ID(arg_ID)) {
         return;
     }
@@ -250,7 +253,7 @@ void Sia::Layered_network::delete_layer(const uint64_t arg_ID) {
     }
 }
 
-void Sia::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
+void Coesius::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
     switch (arg_type)
     {
     case layer_types::INPUT:
@@ -265,7 +268,7 @@ void Sia::Layered_network::settings_delete(const uint8_t arg_type, const uint32_
     }
 }
 
-bool Sia::Layered_network::existing_ID(const u_int64_t& arg_ID) {
+bool Coesius::Layered_network::existing_ID(const u_int64_t& arg_ID) {
     for (auto layer : _layers){
         if(std::get<1>(layer) == arg_ID)
             return true;
@@ -273,7 +276,7 @@ bool Sia::Layered_network::existing_ID(const u_int64_t& arg_ID) {
     return false;
 }
 
-void Sia::Layered_network::conditional_reserve(){
+void Coesius::Layered_network::conditional_reserve(){
 
     // Both 3 and 10 are 'randomly' chosen numbers, 3 seems like a
     // fair ~buffer~ before reallocating more memory, and 10 seems
@@ -291,8 +294,8 @@ void Sia::Layered_network::conditional_reserve(){
     }
 }
 
-template <Sia::INTERNAL::is_valid_1D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
+template <Coesius::INTERNAL::is_valid_1D_matrix T>
+void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
 
     conditional_reserve();
 
@@ -308,8 +311,8 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     ++_current_working_index_general;
 }
 
-template <Sia::INTERNAL::is_valid_2D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
+template <Coesius::INTERNAL::is_valid_2D_matrix T>
+void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
 
@@ -325,8 +328,8 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
     ++_current_working_index_general;
 }
 
-template <Sia::INTERNAL::is_valid_3D_matrix T>
-void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
+template <Coesius::INTERNAL::is_valid_3D_matrix T>
+void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
 
@@ -349,3 +352,5 @@ void Sia::Layered_network::add_layer(const Sia::Input_matrix<T>& arg_layer) {
 }
 
 } // Namespace end scope
+
+#endif // No more Coesius_lib
