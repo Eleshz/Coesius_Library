@@ -10,29 +10,32 @@
 #include <iostream>
 #include <algorithm>
 
+#define NAMESPACE_COESIUS Coesius
+
 #ifndef COESIUS_LIB_H
 #define COESIUS_LIB_H
 
 #include <coesius/dev/general.ipp>
 
-enum layer_types {
-    INPUT = 0,
-    OUTPUT,
-    DENSE
-};
 
-enum matrix_types {
-    ONE_D = 0,
-    TWO_D,
-    THREE_D,
-    type_NAN
-};
-
-namespace Coesius { // Start namespace scope
+namespace NAMESPACE_COESIUS { // Start namespace scope
 
 class Layered_network;
 
-namespace INTERNAL{
+namespace Internal{
+
+    enum layer_types {
+        INPUT = 0,
+        OUTPUT,
+        DENSE
+    };
+
+    enum matrix_types {
+        ONE_D = 0,
+        TWO_D,
+        THREE_D,
+        type_NAN
+    };
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -74,7 +77,7 @@ concept is_valid = is_valid_1D_matrix<T> || is_valid_2D_matrix<T> || is_valid_3D
 
 } // INTERNAL end scope
 
-template <Coesius::INTERNAL::is_valid T>
+template <Coesius::Internal::is_valid T>
 class Input_matrix {
 
     template <typename U>
@@ -88,7 +91,7 @@ protected:
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint8_t _layer_type = layer_types::INPUT;
+    const uint8_t _layer_type = Internal::layer_types::INPUT;
     const uint16_t _input_type;
 
 
@@ -111,7 +114,7 @@ protected:
 // Settings
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint8_t _layer_type = layer_types::DENSE;
+    const uint8_t _layer_type = Internal::layer_types::DENSE;
 
     Eigen::ArrayXf* _output = nullptr;
     std::size_t _width;
@@ -132,7 +135,7 @@ protected:
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint8_t _layer_type = layer_types::OUTPUT;
+    const uint8_t _layer_type = Internal::layer_types::OUTPUT;
 
 
 public:
@@ -148,7 +151,7 @@ private:
 // Output
     Eigen::ArrayXf _output;
 // General network stuff ------------------------------------------------------------------------------------------------------------------
-    std::vector<std::tuple<layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
+    std::vector<std::tuple<Internal::layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
     std::vector<std::pair<uint64_t, uint64_t>> _links; // (Two unique IDs that represent a link, first is head, second is tail)
     std::vector<Eigen::MatrixXf> _matrices; // Stores whatever matrices the network needs, layers-anything
     std::vector<Eigen::ArrayXf> _arrays;  // Stores whatever arrays the network needs, layers-anything
@@ -157,7 +160,7 @@ private:
     std::vector<Eigen::ArrayXf> _map_arrays; // Array for the final map of the network
     std::vector<void (*)(const Eigen::ArrayXf&)> _map_functions; // Array functions for the final map of the network
 // Input stuff ----------------------------------------------------------------------------------------------------------------------------
-    std::tuple<uint16_t, matrix_types> _input_settings; // Just saves whether it's a 1/2/3 dimensional input
+    std::tuple<uint16_t, Internal::matrix_types> _input_settings; // Just saves whether it's a 1/2/3 dimensional input
 // Dense stuff ----------------------------------------------------------------------------------------------------------------------------
     // (Layer width, activation function, activation function derivative, using a bias, using the weights, unique ID)
     std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings;
@@ -184,13 +187,13 @@ public:
     explicit Layered_network() {};
     ~Layered_network() {};
 
-    template <Coesius::INTERNAL::is_valid_1D_matrix T>
+    template <Coesius::Internal::is_valid_1D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
     
-    template <Coesius::INTERNAL::is_valid_2D_matrix T>
+    template <Coesius::Internal::is_valid_2D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
 
-    template <Coesius::INTERNAL::is_valid_3D_matrix T>
+    template <Coesius::Internal::is_valid_3D_matrix T>
     void add_layer(const Input_matrix<T>& arg_layer);
     
 };

@@ -11,7 +11,7 @@ void Coesius::Layered_network::delete_layer(const uint64_t arg_ID) {
             u_int32_t setting_index = std::get<2>(layer);
             _layers.erase(_layers.begin() + index);
             if(layer_type == 1) {
-                settings_delete(layer_types::INPUT, setting_index);
+                settings_delete(Internal::layer_types::INPUT, setting_index);
             }
             std::for_each(_layers.begin() + index, _layers.end(), [&](auto& lambda_layer){--std::get<2>(lambda_layer);});
             break;
@@ -23,12 +23,12 @@ void Coesius::Layered_network::delete_layer(const uint64_t arg_ID) {
 void Coesius::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
     switch (arg_type)
     {
-    case layer_types::INPUT:
+    case Internal::layer_types::INPUT:
         std::get<0>(_input_settings) = 0;
-        std::get<1>(_input_settings) = matrix_types::type_NAN;
+        std::get<1>(_input_settings) = Internal::matrix_types::type_NAN;
         _dense_settings.erase(_dense_settings.begin() + arg_index);
         break;
-    case layer_types::DENSE:
+    case Internal::layer_types::DENSE:
 
     default:
         break;
@@ -61,7 +61,7 @@ void Coesius::Layered_network::conditional_reserve(){
     }
 }
 
-template <Coesius::INTERNAL::is_valid_1D_matrix T>
+template <Coesius::Internal::is_valid_1D_matrix T>
 void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
 
     conditional_reserve();
@@ -72,13 +72,13 @@ void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_lay
             return;
         }
     }
-    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
+    _layers.emplace_back(Internal::INPUT, (arg_layer._ID), _current_working_index_general);
     _arrays[_current_working_index_array] = arg_layer._input;
     ++_current_working_index_array;
     ++_current_working_index_general;
 }
 
-template <Coesius::INTERNAL::is_valid_2D_matrix T>
+template <Coesius::Internal::is_valid_2D_matrix T>
 void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
@@ -89,13 +89,13 @@ void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_lay
             return;
         }
     }
-    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
+    _layers.emplace_back(Internal::INPUT, (arg_layer._ID), _current_working_index_general);
     _matrices[_current_working_index_matrix] = arg_layer._input;
     ++_current_working_index_matrix;
     ++_current_working_index_general;
 }
 
-template <Coesius::INTERNAL::is_valid_3D_matrix T>
+template <Coesius::Internal::is_valid_3D_matrix T>
 void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_layer) {
     
     conditional_reserve();
@@ -104,13 +104,13 @@ void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_lay
     const std::size_t second_layer = 1;
     const std::size_t third_layer = 2;
 
-    for (std::tuple<layer_types, uint64_t, uint64_t> layer_i : _layers){
+    for (std::tuple<Internal::layer_types, uint64_t, uint64_t> layer_i : _layers){
         if(existing_ID(std::get<2>(layer_i))) {
             std::cerr << "Only one input layer permitted... this has done nothing!\n";
             return;
         }
     }
-    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
+    _layers.emplace_back(Internal::INPUT, (arg_layer._ID), _current_working_index_general);
     _matrices[_current_working_index_matrix] = arg_layer._input[first_layer];
     _matrices[_current_working_index_matrix+1] = arg_layer._input[second_layer];
     _matrices[_current_working_index_matrix+2] = arg_layer._input[third_layer];

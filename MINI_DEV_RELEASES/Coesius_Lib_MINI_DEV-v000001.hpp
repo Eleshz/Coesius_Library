@@ -10,8 +10,6 @@
 #include <vector>
 
 
-#define NAMESPACE_COESIUS Coesius
-
 #ifndef COESIUS_LIB_H
 #define COESIUS_LIB_H
 
@@ -26,24 +24,24 @@ static struct RandomUInt64T {
     }
 } RANDOM_UINT64T;
 
-namespace NAMESPACE_COESIUS { // Start namespace scope
+enum layer_types {
+    INPUT = 0,
+    OUTPUT,
+    DENSE
+};
+
+enum matrix_types {
+    ONE_D = 0,
+    TWO_D,
+    THREE_D,
+    type_NAN
+};
+
+namespace Coesius { // Start namespace scope
 
 class Layered_network;
 
 namespace Internal{
-
-    enum layer_types {
-        INPUT = 0,
-        OUTPUT,
-        DENSE
-    };
-
-    enum matrix_types {
-        ONE_D = 0,
-        TWO_D,
-        THREE_D,
-        type_NAN
-    };
 
 // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -99,7 +97,7 @@ protected:
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint8_t _layer_type = Internal::layer_types::INPUT;
+    const uint8_t _layer_type = layer_types::INPUT;
     const uint16_t _input_type;
 
 public:
@@ -154,7 +152,7 @@ protected:
 // Settings
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint8_t _layer_type = Internal::layer_types::DENSE;
+    const uint8_t _layer_type = layer_types::DENSE;
 
     Eigen::ArrayXf* _output = nullptr;
     std::size_t _width;
@@ -175,7 +173,7 @@ protected:
 
     const Layered_network& _network;
     const uint64_t _ID = RANDOM_UINT64T();
-    const uint8_t _layer_type = Internal::layer_types::OUTPUT;
+    const uint8_t _layer_type = layer_types::OUTPUT;
 
 public:
     explicit Output_matrix(const Layered_network& network) : _network(network) {};
@@ -190,7 +188,7 @@ private:
 // Output
     Eigen::ArrayXf _output;
 // General network stuff ------------------------------------------------------------------------------------------------------------------
-    std::vector<std::tuple<Internal::layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
+    std::vector<std::tuple<layer_types, uint64_t, uint64_t>> _layers; // (Type / unique ID / index [for the network])
     std::vector<std::pair<uint64_t, uint64_t>> _links; // (Two unique IDs that represent a link, first is head, second is tail)
     std::vector<Eigen::MatrixXf> _matrices; // Stores whatever matrices the network needs, layers-anything
     std::vector<Eigen::ArrayXf> _arrays;  // Stores whatever arrays the network needs, layers-anything
@@ -199,7 +197,7 @@ private:
     std::vector<Eigen::ArrayXf> _map_arrays; // Array for the final map of the network
     std::vector<void (*)(const Eigen::ArrayXf&)> _map_functions; // Array functions for the final map of the network
 // Input stuff ----------------------------------------------------------------------------------------------------------------------------
-    std::tuple<uint16_t, Internal::matrix_types> _input_settings; // Just saves whether it's a 1/2/3 dimensional input
+    std::tuple<uint16_t, matrix_types> _input_settings; // Just saves whether it's a 1/2/3 dimensional input
 // Dense stuff ----------------------------------------------------------------------------------------------------------------------------
     // (Layer width, activation function, activation function derivative, using a bias, using the weights, unique ID)
     std::vector<std::tuple<size_t, void (*)(const Eigen::ArrayXf&), void (*)(const Eigen::ArrayXf&), bool, bool, uint64_t>> _dense_settings;
@@ -246,7 +244,7 @@ void Coesius::Layered_network::delete_layer(const uint64_t arg_ID) {
             u_int32_t setting_index = std::get<2>(layer);
             _layers.erase(_layers.begin() + index);
             if(layer_type == 1) {
-                settings_delete(Internal::layer_types::INPUT, setting_index);
+                settings_delete(layer_types::INPUT, setting_index);
             }
             std::for_each(_layers.begin() + index, _layers.end(), [&](auto& lambda_layer){--std::get<2>(lambda_layer);});
             break;
@@ -258,12 +256,12 @@ void Coesius::Layered_network::delete_layer(const uint64_t arg_ID) {
 void Coesius::Layered_network::settings_delete(const uint8_t arg_type, const uint32_t arg_index) {
     switch (arg_type)
     {
-    case Internal::layer_types::INPUT:
+    case layer_types::INPUT:
         std::get<0>(_input_settings) = 0;
-        std::get<1>(_input_settings) = Internal::matrix_types::type_NAN;
+        std::get<1>(_input_settings) = matrix_types::type_NAN;
         _dense_settings.erase(_dense_settings.begin() + arg_index);
         break;
-    case Internal::layer_types::DENSE:
+    case layer_types::DENSE:
 
     default:
         break;
@@ -307,7 +305,7 @@ void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_lay
             return;
         }
     }
-    _layers.emplace_back(Internal::INPUT, (arg_layer._ID), _current_working_index_general);
+    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
     _arrays[_current_working_index_array] = arg_layer._input;
     ++_current_working_index_array;
     ++_current_working_index_general;
@@ -324,7 +322,7 @@ void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_lay
             return;
         }
     }
-    _layers.emplace_back(Internal::INPUT, (arg_layer._ID), _current_working_index_general);
+    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
     _matrices[_current_working_index_matrix] = arg_layer._input;
     ++_current_working_index_matrix;
     ++_current_working_index_general;
@@ -339,13 +337,13 @@ void Coesius::Layered_network::add_layer(const Coesius::Input_matrix<T>& arg_lay
     const std::size_t second_layer = 1;
     const std::size_t third_layer = 2;
 
-    for (std::tuple<Internal::layer_types, uint64_t, uint64_t> layer_i : _layers){
+    for (std::tuple<layer_types, uint64_t, uint64_t> layer_i : _layers){
         if(existing_ID(std::get<2>(layer_i))) {
             std::cerr << "Only one input layer permitted... this has done nothing!\n";
             return;
         }
     }
-    _layers.emplace_back(Internal::INPUT, (arg_layer._ID), _current_working_index_general);
+    _layers.emplace_back(INPUT, (arg_layer._ID), _current_working_index_general);
     _matrices[_current_working_index_matrix] = arg_layer._input[first_layer];
     _matrices[_current_working_index_matrix+1] = arg_layer._input[second_layer];
     _matrices[_current_working_index_matrix+2] = arg_layer._input[third_layer];

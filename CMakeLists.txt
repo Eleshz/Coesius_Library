@@ -65,7 +65,7 @@ target_link_libraries(Coesius_DEV INTERFACE Eigen3::Eigen)
 #=============================================================================
 
 # CoesiusLibrary LOCAL
-add_executable(DEV development/main.cpp)
+add_executable(DEV dev/main.cpp)
 target_link_libraries(DEV PRIVATE benchmark::benchmark Coesius_DEV)
 
 # CoesiusLibrary TESTING

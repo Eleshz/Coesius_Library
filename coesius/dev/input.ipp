@@ -1,17 +1,17 @@
-template <Coesius::INTERNAL::is_valid S>
+template <Coesius::Internal::is_valid S>
 template <typename U>
 constexpr uint16_t Coesius::Input_matrix<S>::deduce_input_type() {
-    if constexpr (Coesius::INTERNAL::is_valid_1D_matrix<U>) {
+    if constexpr (Coesius::Internal::is_valid_1D_matrix<U>) {
         return 1;
-    } else if constexpr (Coesius::INTERNAL::is_valid_2D_matrix<U>) {
+    } else if constexpr (Coesius::Internal::is_valid_2D_matrix<U>) {
         return 2;
-    } else if constexpr (Coesius::INTERNAL::is_valid_3D_matrix<U>) {
+    } else if constexpr (Coesius::Internal::is_valid_3D_matrix<U>) {
         return 3;
     }
     return 4; 
 }
 
-template <Coesius::INTERNAL::is_valid S>
+template <Coesius::Internal::is_valid S>
 void Coesius::Input_matrix<S>::debugStatus(){
     bool sync_status = std::ios::sync_with_stdio();
     std::ios::sync_with_stdio(false);
