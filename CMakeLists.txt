@@ -82,12 +82,12 @@ include(CTest)
 
 # Test 1
 add_executable(testing_1 tests/test_1.cpp)
-target_link_libraries(testing_1 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
+target_link_libraries(testing_1 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark Eigen3::Eigen BLAS::BLAS Fastor::Fastor)
 add_test(NAME TEST_1 COMMAND testing_1)
 
 # Test 2
 add_executable(testing_2 tests/test_2.cpp)
-target_link_libraries(testing_2 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
+target_link_libraries(testing_2 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark Eigen3::Eigen BLAS::BLAS Fastor::Fastor)
 add_test(NAME TEST_2 COMMAND testing_2)
 
 # Test 3
