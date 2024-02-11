@@ -1,10 +1,11 @@
 #include <coesius/dev/network.hpp>
+#include <Fastor/Fastor.h>
+#include <cblas.h>
 
 #include <array>
 #include <iostream>
 
-int main(){
+int main() {
 
-
-    return 0;   
+    return 0;
 }

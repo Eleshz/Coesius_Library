@@ -30,7 +30,7 @@ concept matrix_2D = requires(matrix_type arg_input) {
     requires matrix_type::RowsAtCompileTime != Eigen::Dynamic;
     requires matrix_type::ColsAtCompileTime != Eigen::Dynamic;
     requires matrix_type::RowsAtCompileTime != 1; // If it's got only one row, then it's not two dimensional, it's one dimensional duh
-    requires matrix_type::ColsAtCompileTime != 1; // Same with the columns
+    requires matrix_type::ColsAtCompileTime != 1; // Same with the columns, but the one dimensional doesn't work this way either
 };
 
 template <typename matrix_type>

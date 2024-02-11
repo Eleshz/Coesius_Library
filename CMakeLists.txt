@@ -26,10 +26,16 @@ endif()
 #=============================================================================
 # Dependencies
 
+include_directories()
+
+set(BLA_VENDOR OpenBLAS)
+
 include(GNUInstallDirs)
 find_package(benchmark REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(GTest REQUIRED)
+find_package(BLAS REQUIRED)
+find_package(Fastor REQUIRED)
 
 #=============================================================================
 # Targets
@@ -44,7 +50,7 @@ target_include_directories(Coesius INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(Coesius INTERFACE Eigen3::Eigen)
+target_link_libraries(Coesius INTERFACE Eigen3::Eigen BLAS::BLAS Fastor::Fastor)
 
 # v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^
 
@@ -55,19 +61,20 @@ target_sources(Coesius_DEV INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/network.ipp>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/input.ipp>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/general.ipp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/internal.ipp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/coesius/dev/act_funcs.ipp>
 )
 target_compile_features(Coesius_DEV INTERFACE cxx_std_23)
 target_include_directories(Coesius_DEV INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
-target_link_libraries(Coesius_DEV INTERFACE Eigen3::Eigen)
+target_link_libraries(Coesius_DEV INTERFACE benchmark::benchmark Eigen3::Eigen BLAS::BLAS Fastor::Fastor)
 
 #=============================================================================
 
 # CoesiusLibrary LOCAL
 add_executable(DEV dev/main.cpp)
 target_link_libraries(DEV PRIVATE benchmark::benchmark Coesius_DEV)
-target_link_options(DEV PRIVATE "-lasan" "-lubsan")
 
 # CoesiusLibrary TESTING
 enable_testing()
@@ -75,19 +82,16 @@ include(CTest)
 
 # Test 1
 add_executable(testing_1 tests/test_1.cpp)
-target_link_options(testing_1 PRIVATE "-lasan" "-lubsan")
 target_link_libraries(testing_1 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_1 COMMAND testing_1)
 
 # Test 2
 add_executable(testing_2 tests/test_2.cpp)
-target_link_options(testing_2 PRIVATE "-lasan" "-lubsan")
 target_link_libraries(testing_2 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_2 COMMAND testing_2)
 
 # Test 3
 add_executable(testing_3 tests/test_3.cpp)
-target_link_options(testing_3 PRIVATE "-lasan" "-lubsan")
 target_link_libraries(testing_3 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_3 COMMAND testing_3)
 

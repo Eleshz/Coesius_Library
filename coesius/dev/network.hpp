@@ -10,6 +10,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include <Fastor/Fastor.h>
+#include <cblas.h>
+
 #ifndef COESIUS_LIB_H
 #define COESIUS_LIB_H
 
@@ -31,6 +34,11 @@ template <Coesius::Internal::matrix matrix_type>
 class Input_matrix {
     friend Layered_network;
     Internal::matrix_types m_input_type;
+
+    struct m_links {
+        std::vector<uint64_t> link;
+    };
+
 protected:
     matrix_type& m_ref_to_input;
 public:
@@ -62,6 +70,7 @@ private:
         uint64_t layer_id;
         uint64_t layer_network_id;
     };  // (Type / unique ID / index [for the network])
+
 
     std::vector<m_layer> m_layers;
 

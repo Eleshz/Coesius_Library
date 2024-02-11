@@ -1,6 +1,8 @@
 #pragma once
 
 #include <random>
+#define EIGEN_USE_BLAS
+
 class RandomUInt64T {
     std::mt19937_64 m_gen;
     std::uniform_int_distribution<uint64_t> m_dis;
