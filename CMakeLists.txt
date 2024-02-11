@@ -13,7 +13,7 @@ if (NOT MSVC)
             -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization
             -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept
             -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo
-            -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Og
+            -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused -Og -g3
         )
     endif()
     if(CMAKE_BUILD_TYPE MATCHES Release)
@@ -67,6 +67,7 @@ target_link_libraries(Coesius_DEV INTERFACE Eigen3::Eigen)
 # CoesiusLibrary LOCAL
 add_executable(DEV dev/main.cpp)
 target_link_libraries(DEV PRIVATE benchmark::benchmark Coesius_DEV)
+target_link_options(DEV PRIVATE "-lasan" "-lubsan")
 
 # CoesiusLibrary TESTING
 enable_testing()
@@ -74,16 +75,19 @@ include(CTest)
 
 # Test 1
 add_executable(testing_1 tests/test_1.cpp)
+target_link_options(testing_1 PRIVATE "-lasan" "-lubsan")
 target_link_libraries(testing_1 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_1 COMMAND testing_1)
 
 # Test 2
 add_executable(testing_2 tests/test_2.cpp)
+target_link_options(testing_2 PRIVATE "-lasan" "-lubsan")
 target_link_libraries(testing_2 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_2 COMMAND testing_2)
 
 # Test 3
 add_executable(testing_3 tests/test_3.cpp)
+target_link_options(testing_3 PRIVATE "-lasan" "-lubsan")
 target_link_libraries(testing_3 PRIVATE Coesius_DEV GTest::GTest GTest::Main benchmark::benchmark)
 add_test(NAME TEST_3 COMMAND testing_3)
 
