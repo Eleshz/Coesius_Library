@@ -10,13 +10,12 @@
 #include <iostream>
 #include <algorithm>
 
-#define NAMESPACE_COESIUS Coesius
-
 #ifndef COESIUS_LIB_H
 #define COESIUS_LIB_H
 
-#include <coesius/dev/general.ipp>
+#define NAMESPACE_COESIUS Coesius
 
+#include <coesius/dev/general.ipp>
 
 namespace NAMESPACE_COESIUS { // Start namespace scope
 
@@ -24,65 +23,16 @@ class Layered_network;
 
 namespace Internal{
 
-    enum class layer_types {
-        INPUT,
-        OUTPUT,
-        DENSE
-    };
-
-    enum class matrix_types {
-        ONE_D,
-        TWO_D,
-        THREE_D,
-        type_NAN
-    };
-
-// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-template <typename T>
-concept is_valid_1D_matrix = requires(T t) {
-    { t.size() } -> std::same_as<std::ptrdiff_t>;
-    { t(0) } -> std::same_as<typename T::Scalar&>;
-    { t(0) } -> std::same_as<float&>;
-    requires T::SizeAtCompileTime != Eigen::Dynamic;
-    requires std::is_base_of_v<Eigen::DenseBase<T>, T> && T::RowsAtCompileTime == 1;
-};
-
-template <typename T>
-concept is_valid_2D_matrix = requires(T t) {
-    { t.rows() } -> std::same_as<std::ptrdiff_t>;
-    { t.cols() } -> std::same_as<std::ptrdiff_t>;
-    { t(0, 0) } -> std::same_as<float&>;
-    requires T::RowsAtCompileTime != Eigen::Dynamic;
-    requires T::ColsAtCompileTime != Eigen::Dynamic;
-    requires T::RowsAtCompileTime != 1;
-};
-
-template <typename T>
-struct is_std_array : std::false_type {};
-
-template <typename T, std::size_t N>
-struct is_std_array<std::array<T, N>> : std::true_type {};
-
-template <typename T>
-concept is_valid_3D_matrix = requires(T t) {
-    requires is_std_array<T>::value;
-    requires is_valid_2D_matrix<typename T::value_type>;
-};
-
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-template <typename T>
-concept is_valid = is_valid_1D_matrix<T> || is_valid_2D_matrix<T> || is_valid_3D_matrix<T>;
+#include <coesius/dev/internal.ipp> // There's so much I'm not stuffing it all into this header
 
 } // INTERNAL end scope
 
-template <Coesius::Internal::is_valid T>
+template <Coesius::Internal::matrix matrix_type>
 class Input_matrix {
     friend Layered_network;
-    uint16_t deduce_input_type();
+    Internal::matrix_types m_input_type;
 protected:
-    T& _input;
+    matrix_type& m_ref_to_input;
 public:
 
 };
@@ -104,7 +54,7 @@ protected:
 class Layered_network {
 private:
 // Output
-    Eigen::ArrayXf _output;
+    Eigen::ArrayXf m_network_output;
 // General network stuff ------------------------------------------------------------------------------------------------------------------
 
     struct m_layer {
